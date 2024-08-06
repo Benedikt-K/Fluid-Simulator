@@ -31,7 +31,7 @@ namespace SPH_Bachelorprojekt
             public int numberOfScreenshots = 0;
             public float StartingDensity;
             public float CurrentTimeStep = 0;
-            public bool IsPaused = true;
+            public bool IsPaused = false;
             public float MaxPressure = 1f;
             public float TimeStep;
             public float Viscosity;
