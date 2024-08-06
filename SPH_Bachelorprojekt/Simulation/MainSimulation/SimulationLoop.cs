@@ -54,14 +54,10 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             float restDensity = Density;
             float gravity = Gravity;
 
-            
 
             // Get neighbours
             Quadratic quadraticSolver = new Quadratic(Particles, ParticleSizeH);
-            //UniformGrid uniformSolver = new UniformGrid(Particles, ParticleSizeH, 100, 100, 0, 0);
-            //uniformSolver.InitializeGrid();
-            //uniformSolver.SortParticlesInGrid();
-            foreach (Particle particle in Particles)
+            /*foreach (Particle particle in Particles)
             {
                 // Quadratic neighbour 
                 List<Particle> neighbours = quadraticSolver.GetNeighboursQuadratic(particle);
@@ -79,8 +75,8 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                     particle.Neighbours = new List<Particle>();
                 }
                 
-            }
-            /*Parallel.ForEach(Particles, particle =>
+            }*/
+            Parallel.ForEach(Particles, particle =>
             {
                 //Quadratic neighbour
                 List<Particle> neighbours = quadraticSolver.GetNeighboursQuadratic(particle);
@@ -99,7 +95,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                    particle.Neighbours = new List<Particle>();
                 }
 
-            });*/
+            });
             //Console.WriteLine("Number Particles: " + Particles.Count);
             //Console.WriteLine("Number Particles: " + Particles.Count);
 
@@ -329,6 +325,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
 
         public Vector2 CalculateSurfaceTensionAcceleration(Particle particle, List<Particle> neighbours, Kernel kernel)
         {
+            // Have the feeling that it doesnt work properly
             Vector2 surfaceTensionAcc = Vector2.Zero;
 
             foreach (Particle neighbor in particle.Neighbours)

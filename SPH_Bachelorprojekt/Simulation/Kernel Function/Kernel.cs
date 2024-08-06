@@ -20,27 +20,6 @@ namespace SPH_Bachelorprojekt.Simulation.Kernel_Function
             alpha = 5 / (14 * Convert.ToSingle(Math.PI) * h2); // For 2D          
         }
 
-        /*
-        public float W(Vector2 position_i, Vector2 position_j)
-        {
-            float distance = Vector2.Distance(position_i, position_j);
-            float q = distance / h;
-            float result = 0f;
-            float q_2_3 = Convert.ToSingle(Math.Pow(2 - q, 3));
-            float q_1_3 = Convert.ToSingle(Math.Pow(1 - q, 3));
-
-            if (q >= 0 && q < 1)
-            {
-                result = q_2_3 - 4 * q_1_3;
-            }
-            else if (q <= 1 && q < 2)
-            {
-                result = q_2_3;
-            }
-            // initialized as 0 so if q >= 2 result = 0
-            return alpha * result;
-        }*/
-
         public float W(float distance)
         {
             /// implementation from https://cg.informatik.uni-freiburg.de/course_notes/sim_03_particleFluids.pdf slide 60
@@ -51,28 +30,6 @@ namespace SPH_Bachelorprojekt.Simulation.Kernel_Function
             return alpha * t3;
         }
 
-        /*
-        public Vector2 GradW(Vector2 position_I, Vector2 position_J)
-        {
-            Vector2 positionDifference = position_I - position_J;
-            float distance = Vector2.Distance(position_I, position_J);
-            float q = Vector2.Distance(position_I, position_J) / h;
-            //Vector2 result = Vector2.Zero;
-            float result = Vector2.Distance(position_I, position_J);
-            float q_2_2 = Convert.ToSingle(Math.Pow(2 - q, 2));
-            float q_1_2 = Convert.ToSingle(Math.Pow(1 - q, 2));
-
-            if (q >= 0 && q < 1)
-            {
-                result = (distance / (6 * h2 * q)) * (-3 * q_2_2 + 12 * q_1_2);
-            }
-            else if (q <= 1 && q < 2)
-            {
-                result = (distance / (6 * h2 * q)) * (-3 * q_2_2);
-            }
-            // initialized as 0 so if q >= 2 result = 0
-            return alpha * (positionDifference / (positionDifference.Length() * h)) * result;
-        }*/
         
         public Vector2 GradW(Vector2 position_I, Vector2 position_J)
         {
@@ -93,6 +50,7 @@ namespace SPH_Bachelorprojekt.Simulation.Kernel_Function
 
         public void TestKernel()
         {
+            // Tests from https://cg.informatik.uni-freiburg.de/course_notes/sim_03_particleFluids.pdf
             // Test Kernel - W
             Console.WriteLine("Tests for Kernel:");
             float pi = Convert.ToSingle(Math.PI);

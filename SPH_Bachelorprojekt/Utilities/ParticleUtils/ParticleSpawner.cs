@@ -287,19 +287,19 @@ namespace SPH_Bachelorprojekt.Utilities.ParticleUtils
             return particleList;
         }
 
-        public List<Particle> BreakingDamBigAndWide()
+        public List<Particle> BreakingDamBigAndWideTestLimit()
         {
             List<Particle> particleList = new List<Particle>();
-            float magitudeOfDeviation = 0.1f;
+            float magitudeOfDeviation = 0f;
 
             // Spawn boundarys
-            int maxI = 65;
+            int maxI = 125;
             int maxJ = 85;
             for (int i = 5; i < maxI; i += 1)
             {
                 for (int j = 5; j < maxJ; j += 1)
                 {
-                    if (i < 7 || i > maxI - 3 || j < 7 || j > maxJ - 3)
+                    if (i < 7 || i > maxI - 3 || j < 7)
                     {
                         Particle particle = new Particle(new Vector2(i * ParticleSizeH, j * ParticleSizeH), Density, ParticleSizeH, true);
                         particleList.Add(particle);

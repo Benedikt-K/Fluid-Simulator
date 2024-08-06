@@ -19,14 +19,6 @@ namespace SPH_Bachelorprojekt
         {
             Console.WriteLine("Start");
             var window = new SimpleWindow();
-            /*
-            // Test plot using Library ScottPlot
-            float[] dataX = { 1, 2, 3, 4, 5 };
-            float[] dataY = { 1, 4, 9, 16, 25 };
-            ScottPlot.Plot plot = new ScottPlot.Plot();
-            plot.Add.Scatter(dataX, dataY);
-            plot.SavePng("test.png", 400, 300);
-            */
             window.Run();
             //Console.WriteLine("All done");
         }
@@ -39,7 +31,7 @@ namespace SPH_Bachelorprojekt
             public int numberOfScreenshots = 0;
             public float StartingDensity;
             public float CurrentTimeStep = 0;
-            public bool IsPaused = false;
+            public bool IsPaused = true;
             public float MaxPressure = 1f;
             public float TimeStep;
             public float Viscosity;
@@ -53,9 +45,9 @@ namespace SPH_Bachelorprojekt
             {
                 // INITIALIZE IMPORTANT VARIABLES
                 float particleSizeH = 4f;                           // works with 8
-                float viscosity = 20f;                              // works with 10
+                float viscosity = 10f;                              // works with 10
                 float timeStep = 0.07f;                              // works with 0.2
-                float startDensity = 0.8f;                          // works with 0.3
+                float startDensity = 0.4f;                          // works with 0.3
                 float gravity = -0.8f;                              // works with -0.4
                 //float smoothingLength = 2 * particleSizeH;
                 float smoothingLength = particleSizeH;
@@ -87,12 +79,13 @@ namespace SPH_Bachelorprojekt
                 //List<Particle> particles = spawner.BreakingDam();
                 //List<Particle> particles = spawner.BreakingDamBig();
                 //List<Particle> particles = spawner.BreakingDamBigAndWide();
+                //List<Particle> particles = spawner.BreakingDamBigAndWideTestLimit();
                 //List<Particle> particles = spawner.FunnelIntoBox();
                 //List<Particle> particles = spawner.BreakingDamBigWithHole();
                 List<Particle> particles = spawner.BreakingDamOnBothSides();
                 // Sim
 
-                //List<Particle> particles = spawner.TestSetup();
+
 
                 // TESTS
                 //List<Particle> particles = spawner.TestOneParticleWithTwoLayerBoundarys();
@@ -100,6 +93,7 @@ namespace SPH_Bachelorprojekt
                 //List<Particle> particles = spawner.TestParticlesInJarTwoLayerBoundaryWithSpacing();
                 //List<Particle> particles = spawner.TestParticlesInJarDroppingTwoLayerBoundary();
                 //List<Particle> particles = spawner.TestParticlesInJarTwoLayerBoundary();
+                //List<Particle> particles = spawner.TestSetup();
                 // TESTS
 
                 Console.WriteLine("Particles spawned");
@@ -151,7 +145,7 @@ namespace SPH_Bachelorprojekt
                             if (VelocityColors)
                             {
                                 // Color for velocity
-                                float lambdaParticle = simulationLoop.CalculateParticleLambdaCFL(particle.Velocity * 6);
+                                float lambdaParticle = simulationLoop.CalculateParticleLambdaCFL(particle.Velocity * 3);
                                 circle.FillColor = GetColor(lambdaParticle);
                             }
                             else if (PressureColors) 

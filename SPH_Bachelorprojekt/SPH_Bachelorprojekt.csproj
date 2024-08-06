@@ -121,13 +121,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MainWindow2.cs" />
-    <Compile Include="Simulation\Neighbours\UniformGrid.cs" />
-    <Compile Include="Simulation\Neighbours\Index.cs" />
     <Compile Include="Simulation\Kernel Function\Kernel.cs" />
     <Compile Include="Simulation\Neighbours\Quadratic.cs" />
     <Compile Include="Simulation\MainSimulation\SimulationLoop.cs" />
     <Compile Include="Simulation\Particles\Particle.cs" />
-    <Compile Include="Simulation\Particles\ParticleList.cs" />
     <Compile Include="Utilities\ParticleUtils\ParticleDespawner.cs" />
     <Compile Include="Utilities\ParticleUtils\ParticleSpawner.cs" />
   </ItemGroup>

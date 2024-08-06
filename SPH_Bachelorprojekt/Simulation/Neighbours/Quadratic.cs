@@ -28,10 +28,6 @@ namespace SPH_Bachelorprojekt.Simulation.Kernel_Function
                 if (Vector2.Distance(searchParticle.Position, potentialNeighbour.Position) <= 2.1f * ParticleSizeH)
                 {
                     neighbours.Add(potentialNeighbour);
-                    if (neighbours.Count >= 13)
-                    {
-                        //break;
-                    }
                 }
             }
 
