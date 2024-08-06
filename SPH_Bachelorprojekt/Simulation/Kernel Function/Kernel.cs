@@ -1,0 +1,157 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Numerics;
+
+namespace SPH_Bachelorprojekt.Simulation.Kernel_Function
+{
+    class Kernel
+    {
+        private float h; // particle Size
+        private float h2; 
+        private float alpha; // Normalization factor 2D
+
+        public Kernel(float ParticleSize)
+        {
+            h = ParticleSize; // works with Kernel support of h
+            h2 = h * h;
+            alpha = 5 / (14 * Convert.ToSingle(Math.PI) * h2); // For 2D          
+        }
+
+        /*
+        public float W(Vector2 position_i, Vector2 position_j)
+        {
+            float distance = Vector2.Distance(position_i, position_j);
+            float q = distance / h;
+            float result = 0f;
+            float q_2_3 = Convert.ToSingle(Math.Pow(2 - q, 3));
+            float q_1_3 = Convert.ToSingle(Math.Pow(1 - q, 3));
+
+            if (q >= 0 && q < 1)
+            {
+                result = q_2_3 - 4 * q_1_3;
+            }
+            else if (q <= 1 && q < 2)
+            {
+                result = q_2_3;
+            }
+            // initialized as 0 so if q >= 2 result = 0
+            return alpha * result;
+        }*/
+
+        public float W(float distance)
+        {
+            /// implementation from https://cg.informatik.uni-freiburg.de/course_notes/sim_03_particleFluids.pdf slide 60
+            float d = distance / h;
+            var t1 = Math.Max(1 - d, 0);
+            var t2 = Math.Max(2 - d, 0);
+            var t3 = (t2 * t2 * t2) - 4 * (t1 * t1 * t1);
+            return alpha * t3;
+        }
+
+        /*
+        public Vector2 GradW(Vector2 position_I, Vector2 position_J)
+        {
+            Vector2 positionDifference = position_I - position_J;
+            float distance = Vector2.Distance(position_I, position_J);
+            float q = Vector2.Distance(position_I, position_J) / h;
+            //Vector2 result = Vector2.Zero;
+            float result = Vector2.Distance(position_I, position_J);
+            float q_2_2 = Convert.ToSingle(Math.Pow(2 - q, 2));
+            float q_1_2 = Convert.ToSingle(Math.Pow(1 - q, 2));
+
+            if (q >= 0 && q < 1)
+            {
+                result = (distance / (6 * h2 * q)) * (-3 * q_2_2 + 12 * q_1_2);
+            }
+            else if (q <= 1 && q < 2)
+            {
+                result = (distance / (6 * h2 * q)) * (-3 * q_2_2);
+            }
+            // initialized as 0 so if q >= 2 result = 0
+            return alpha * (positionDifference / (positionDifference.Length() * h)) * result;
+        }*/
+        
+        public Vector2 GradW(Vector2 position_I, Vector2 position_J)
+        {
+            /// most of implementation from https://cg.informatik.uni-freiburg.de/course_notes/sim_03_particleFluids.pdf slide 64
+            Vector2 positionDifference = position_I - position_J;
+            float distance = Vector2.Distance(position_I, position_J);
+            float d = distance / h;
+
+            if (d == 0)
+            {
+                return Vector2.Zero;
+            }
+            float t1 = Math.Max(1 - d, 0);
+            float t2 = Math.Max(2 - d, 0);
+            float t3 = (-3 * t2 * t2) + (12 * t1 * t1);
+            return alpha * (positionDifference / (distance * h)) * t3 ; // Maybe h2 instead of h
+        }
+
+        public void TestKernel()
+        {
+            // Test Kernel - W
+            Console.WriteLine("Tests for Kernel:");
+            float pi = Convert.ToSingle(Math.PI);
+
+            float test1 = W(0 * h);
+            float solution1 = 20 / (14 * pi * h2);
+
+            float test2 = W(1 * h);
+            float solution2 = 5 / (14 * pi * h2);
+
+            float test3 = W(Convert.ToSingle(Math.Sqrt(2)) * h);
+            float solution3 = 1.005f / (14f * pi * h2);
+
+            float test4 = test1 + 4 * test2 + 4 * test3;
+            float solution4 = 1.001f / h2;
+
+            Console.WriteLine(test1 + " " + solution1);
+            if (test1 == solution1) { Console.WriteLine("Test 1 Passed"); }
+            Console.WriteLine("------------------");
+            Console.WriteLine(test2 + " " + solution2);
+            if (test2 == solution2) { Console.WriteLine("Test 2 Passed"); }
+            Console.WriteLine("------------------");
+            Console.WriteLine(test3 + " " + solution3);
+            if (Math.Abs(test3 - solution3) < 0.01f) { Console.WriteLine("Test 3 Passed"); }
+            Console.WriteLine("------------------");
+            Console.WriteLine(test4 + " " + solution4);
+            if (Math.Abs(test4 - solution4) < 0.01f) { Console.WriteLine("Test 4 Passed"); }
+            Console.WriteLine("------------------");
+
+            // Test Kernel Gradient - GradW
+            float beta = -3f * Convert.ToSingle(Math.Pow(2 - Math.Sqrt(2), 2));
+            float factor = (1 / (h * Convert.ToSingle(Math.Sqrt(2))));
+            Console.WriteLine("Tests for Gradient of Kernel:");
+            Console.WriteLine("------------------");
+
+            Vector2 test5 = GradW(Vector2.Zero, Vector2.Zero);
+            Vector2 solution5 = new Vector2(0, 0);
+            Console.WriteLine("test 5: " + test5 + " I " + solution5);
+            Console.WriteLine("------------------");
+
+            Vector2 test6 = GradW(Vector2.Zero, new Vector2(h, 0));
+            Vector2 solution6 = new Vector2((3 * alpha) / h, 0);
+            Console.WriteLine("test 6: " + test6 + " I " + solution6);
+            Console.WriteLine("------------------");
+
+            Vector2 test7 = GradW(Vector2.Zero, new Vector2(0, h));
+            Vector2 solution7 = new Vector2(0, (3 * alpha) / h);
+            Console.WriteLine("test 7: " + test7 + " I " + solution7);
+            Console.WriteLine("------------------");
+
+            Vector2 test8 = GradW(Vector2.Zero, new Vector2(h, h));
+            Vector2 solution8 = new Vector2(-factor * alpha * beta, -factor * alpha * beta);
+            Console.WriteLine("test 8: " + test8 + " I " + solution8);
+            Console.WriteLine("------------------");
+
+            Vector2 test9 = GradW(Vector2.Zero, new Vector2(h, -h));
+            Vector2 solution9 = new Vector2(-factor * alpha * beta, factor * alpha * beta);
+            Console.WriteLine("test 9: " + test9 + " I " + solution9);
+            Console.WriteLine("------------------");
+        }
+    }
+}

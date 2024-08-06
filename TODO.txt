@@ -1,0 +1,3 @@
+- neighbour search -> index sort/search -> uniform grid oder sortieren
+- implement forces?
+- test rein schreiben
