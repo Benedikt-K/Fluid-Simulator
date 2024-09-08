@@ -1,0 +1,9 @@
+﻿if checking for IISPH or standart
+if checking for neighbour search
+Linked list neighbour?
+spatial hasing neighbour
+IISPH implement
+testing/fixing kernel -> 2h
+despawner implement
+spawner single particle function with speed
+szenario with fluid out of pipe

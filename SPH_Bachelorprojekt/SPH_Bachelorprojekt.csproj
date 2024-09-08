@@ -122,6 +122,8 @@
   <ItemGroup>
     <Compile Include="MainWindow2.cs" />
     <Compile Include="Simulation\Kernel Function\Kernel.cs" />
+    <Compile Include="Simulation\MainSimulation\IISPH.cs" />
+    <Compile Include="Simulation\MainSimulation\Standard.cs" />
     <Compile Include="Simulation\Neighbours\Quadratic.cs" />
     <Compile Include="Simulation\MainSimulation\SimulationLoop.cs" />
     <Compile Include="Simulation\Neighbours\SpatialHashing.cs" />
@@ -144,6 +146,9 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="TODO.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
