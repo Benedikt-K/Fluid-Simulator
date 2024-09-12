@@ -7,3 +7,4 @@ testing/fixing kernel -> 2h
 despawner implement
 spawner single particle function with speed
 szenario with fluid out of pipe
+maybe add possibility to import 3D models (have to add third dimension before that)
