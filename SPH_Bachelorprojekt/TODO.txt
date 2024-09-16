@@ -1,5 +1,5 @@
-﻿if checking for IISPH or standart
-if checking for neighbour search
+﻿if checking for IISPH or standart -- done
+if checking for neighbour search  -- done
 Linked list neighbour?
 spatial hasing neighbour
 IISPH implement
@@ -8,3 +8,4 @@ despawner implement
 spawner single particle function with speed
 szenario with fluid out of pipe
 maybe add possibility to import 3D models (have to add third dimension before that)
+why sparticles despawn/not visible sometimes

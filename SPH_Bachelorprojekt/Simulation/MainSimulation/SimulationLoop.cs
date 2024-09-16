@@ -49,53 +49,79 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             Viscosity = viscosity;
         }
 
-        public void UpdateAllParticles(float smoothingLength)
+        public void UpdateAllParticles(float smoothingLength, bool useIISPH, bool useNeighbour)
+        {
+            if (useIISPH)
+            {
+                UpdateAllParticlesIISPH(smoothingLength, useNeighbour);
+            }
+            else
+            {
+                UpdateAllParticlesSPH(smoothingLength, useNeighbour);
+            }
+        }
+
+        public void UpdateAllParticlesIISPH(float smoothingLenght, bool useNeighbour)
+        {
+
+        }
+
+            public void UpdateAllParticlesSPH(float smoothingLength, bool useNeighbour)
         {
             float restDensity = Density;
             float gravity = Gravity;
 
-
-            // Get neighbours
-            Quadratic quadraticSolver = new Quadratic(Particles, ParticleSizeH);
-            /*foreach (Particle particle in Particles)
+            ///
+            /// Neighbour search
+            ///
+            if (useNeighbour)
             {
-                // Quadratic neighbour 
-                List<Particle> neighbours = quadraticSolver.GetNeighboursQuadratic(particle);
-                // null reference check
-                if (neighbours != null)
-                {
-                    particle.Neighbours = neighbours;
-                    if (!particle.IsBoundaryParticle)
-                    {
-                        //Console.WriteLine("Neighbours Count: " + particle.Neighbours.Count);
-                    }
-                }
-                else
-                {
-                    particle.Neighbours = new List<Particle>();
-                }
-                
-            }*/
-            Parallel.ForEach(Particles, particle =>
+
+            }
+            else
             {
-                //Quadratic neighbour
-                List<Particle> neighbours = quadraticSolver.GetNeighboursQuadratic(particle);
-
-                // null reference check
-                if (neighbours != null)
+                Quadratic quadraticSolver = new Quadratic(Particles, ParticleSizeH);
+                /*foreach (Particle particle in Particles)
                 {
-                    particle.Neighbours = neighbours;
-                    if (!particle.IsBoundaryParticle)
+                    // Quadratic neighbour 
+                    List<Particle> neighbours = quadraticSolver.GetNeighboursQuadratic(particle);
+                    // null reference check
+                    if (neighbours != null)
                     {
-                        //Console.WriteLine("Neighbours Count: " + particle.Neighbours.Count);
+                        particle.Neighbours = neighbours;
+                        if (!particle.IsBoundaryParticle)
+                        {
+                            //Console.WriteLine("Neighbours Count: " + particle.Neighbours.Count);
+                        }
                     }
-                }
-                else
-                {
-                   particle.Neighbours = new List<Particle>();
-                }
+                    else
+                    {
+                        particle.Neighbours = new List<Particle>();
+                    }
 
-            });
+                }*/
+                Parallel.ForEach(Particles, particle =>
+                {
+                    //Quadratic neighbour
+                    List<Particle> neighbours = quadraticSolver.GetNeighboursQuadratic(particle);
+
+                    // null reference check
+                    if (neighbours != null)
+                    {
+                        particle.Neighbours = neighbours;
+                        if (!particle.IsBoundaryParticle)
+                        {
+                            //Console.WriteLine("Neighbours Count: " + particle.Neighbours.Count);
+                        }
+                    }
+                    else
+                    {
+                        particle.Neighbours = new List<Particle>();
+                    }
+
+                });
+            }
+            
             //Console.WriteLine("Number Particles: " + Particles.Count);
             //Console.WriteLine("Number Particles: " + Particles.Count);
 

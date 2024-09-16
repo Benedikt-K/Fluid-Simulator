@@ -40,6 +40,9 @@ namespace SPH_Bachelorprojekt
             private bool VelocityColors = true;
             private bool PressureColors = false;
             private bool DensityColors = false;
+            // what to use for simulation
+            public bool UseIISPH = false;
+            public bool UseNeighbour = false;
 
             public void Run()
             {
@@ -85,8 +88,6 @@ namespace SPH_Bachelorprojekt
                 //List<Particle> particles = spawner.BreakingDamOnBothSides();
                 // Sim
 
-
-
                 // TESTS
                 //List<Particle> particles = spawner.TestOneParticleWithTwoLayerBoundarys();
                 //List<Particle> particles = spawner.TestOneParticleWithTwoLayerBoundarysOnOther();
@@ -118,7 +119,7 @@ namespace SPH_Bachelorprojekt
                     ////////////////////////
                     if (!IsPaused) 
                     {
-                        simulationLoop.UpdateAllParticles(smoothingLength);
+                        simulationLoop.UpdateAllParticles(smoothingLength, UseIISPH, UseNeighbour);
                     }
                     //Console.WriteLine(particles.Count);
                     ///////////////////////
