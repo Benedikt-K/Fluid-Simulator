@@ -61,7 +61,49 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             }
         }
 
-        public void UpdateAllParticlesIISPH(float smoothingLenght, bool useNeighbour)
+        public void UpdateAllParticlesIISPH(float smoothingLength, bool useNeighbour)
+        {
+            Kernel kernel = new Kernel(smoothingLength);
+            PredictAdvection(kernel);
+            PressureSolve(kernel);
+            Integrate(kernel);
+        }
+
+        public void PredictAdvection(Kernel kernel)
+        {
+            foreach (Particle particle in Particles)
+            {
+                float density = 0.0f;
+                foreach (Particle neighbour in particle.Neighbours)
+                {
+                    density += neighbour.Mass * kernel.W(Vector2.Distance(particle.Position, neighbour.Position));
+                }
+                particle.PredictedVelocity = particle.Velocity + TimeStep * (particle.PressureForce / particle.Mass); //calculate pressure forces
+
+                Vector2 diagonalTerm = Vector2.Zero;
+                foreach (Particle neighbour in particle.Neighbours)
+                {
+                    diagonalTerm += neighbour.Mass / particle.Density * kernel.GradW(particle.Position, neighbour.Position);
+                }
+                diagonalTerm *= TimeStep * TimeStep;
+            }
+
+            foreach (Particle particle in Particles)
+            {
+                float predictedDensity = particle.Density;
+                foreach (Particle neighbour in particle.Neighbours)
+                {
+                    predictedDensity += TimeStep * neighbour.Mass * Vector2.Dot()//
+                }
+            }
+        }
+
+        public void PressureSolve(Kernel kernel)
+        {
+
+        }
+
+        public void Integrate(Kernel kernel)
         {
 
         }

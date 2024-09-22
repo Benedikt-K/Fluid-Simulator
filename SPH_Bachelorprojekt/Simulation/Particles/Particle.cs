@@ -13,6 +13,7 @@ namespace SPH_Bachelorprojekt.Simulation.Particles
         public Vector2 Position;
         public Vector2 PositionNew;
         public Vector2 Velocity;
+        public Vector2 PredictedVelocity;
         public Vector2 Acceleration;
         public float Density;
         public float Mass;
@@ -26,6 +27,7 @@ namespace SPH_Bachelorprojekt.Simulation.Particles
             Position = position;
             PositionNew = position;
             Velocity = Vector2.Zero;
+            PredictedVelocity = Vector2.Zero;
             Acceleration = Vector2.Zero;
             Density = density;
             ParticleSizeH = particleSizeH;
@@ -40,6 +42,7 @@ namespace SPH_Bachelorprojekt.Simulation.Particles
         {
             Position = position;
             Velocity = velocity;
+            PredictedVelocity = Vector2.Zero;
             Density = density;
             ParticleSizeH = particleSizeH;
             IsBoundaryParticle = boundaryParticle;
@@ -52,6 +55,7 @@ namespace SPH_Bachelorprojekt.Simulation.Particles
         {
             Position = position;
             Velocity = velocity;
+            PredictedVelocity = Vector2.Zero;
             Density = density;
             ParticleSizeH = particleSizeH;
             IsBoundaryParticle = boundaryParticle;
