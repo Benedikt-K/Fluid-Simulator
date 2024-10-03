@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Numerics;
 using SPH_Bachelorprojekt.Simulation.Particles;
 using SPH_Bachelorprojekt.Simulation.Kernel_Function;
+using SPH_Bachelorprojekt.Simulation.Neighbours;
 
 namespace SPH_Bachelorprojekt.Simulation.MainSimulation
 {
@@ -24,6 +25,10 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
         public float AverageDensity;
         public float MaxCurrentParticlePressure;
         public float MaxVelocity;
+
+        //later do own document
+        public float RelaxationFactor;
+        public float Gamma;
 
         public SimulationLoop(List<Particle> particles, float density, float particleSizeH, float timeStep, float viscosity, float stiffness, float gravity)
         {
@@ -63,13 +68,13 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
 
         public void UpdateAllParticlesIISPH(float smoothingLength, bool useNeighbour)
         {
-            Kernel kernel = new Kernel(smoothingLength);
+            /*Kernel kernel = new Kernel(smoothingLength);
             PredictAdvection(kernel);
             PressureSolve(kernel);
-            Integrate(kernel);
+            Integrate(kernel);*/
         }
 
-        public void PredictAdvection(Kernel kernel)
+        /*public void PredictAdvection(Kernel kernel)
         {
             foreach (Particle particle in Particles)
             {
@@ -96,12 +101,26 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                     predictedDensity += TimeStep * neighbour.Mass * Vector2.Dot()//
                 }
             }
-        }
+        }*/
 
-        public void PressureSolve(Kernel kernel)
+        /*public void PressureSolve(Kernel kernel)
         {
-
-        }
+            int l = 0;
+            float avgDensityError = 0;
+            while (avgDensityError > RelaxationFactor || l < 2)
+            {
+                avgDensityError = 0.0f;
+                foreach (Particle particle in Particles)
+                {
+                    Vector2 sum = Vector2.Zero;
+                    foreach (Particle neighbour in particle.Neighbours)
+                    {
+                        sum += TimeStep * TimeStep * neighbour.Mass * neighbour.Pressure / (neighbour.Density * neighbour.Density) * kernel.GradW(particle.Position, neighbour.Position);
+                    }
+                    particle.NewPressure = particle.Pressure + Gamma * (Density - particle.Density + sum);
+                }
+            }
+        }*/
 
         public void Integrate(Kernel kernel)
         {
@@ -116,12 +135,18 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             ///
             /// Neighbour search
             ///
+            int CellSize = (int)(ParticleSizeH * 2); //// Particle Size must be int here
+            SpatialHashing hashingNeighbours = new SpatialHashing(CellSize);
             if (useNeighbour)
             {
-
+                //int CellSize = (int) (ParticleSizeH * 2); //// Particle Size must be int here
+                //SpatialHashing hashingNeighbours = new SpatialHashing(CellSize);
             }
             else
             {
+                //int CellSize = (int)(ParticleSizeH * 2); //// Particle Size must be int here
+                //SpatialHashing hashingNeighbours = new SpatialHashing(CellSize);
+                /////////////
                 Quadratic quadraticSolver = new Quadratic(Particles, ParticleSizeH);
                 /*foreach (Particle particle in Particles)
                 {
@@ -144,8 +169,14 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                 }*/
                 Parallel.ForEach(Particles, particle =>
                 {
+                    hashingNeighbours.InsertObject(particle);
+                });
+                Parallel.ForEach(Particles, particle =>
+                {
+                    //spatial hash
+                    hashingNeighbours.InRadius(particle.Position, ParticleSizeH * 2f, ref particle.Neighbours);
                     //Quadratic neighbour
-                    List<Particle> neighbours = quadraticSolver.GetNeighboursQuadratic(particle);
+                    /*List <Particle> neighbours = quadraticSolver.GetNeighboursQuadratic(particle);
 
                     // null reference check
                     if (neighbours != null)
@@ -159,7 +190,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                     else
                     {
                         particle.Neighbours = new List<Particle>();
-                    }
+                    }*/
 
                 });
             }
@@ -280,6 +311,8 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             // Update velocitys and positions
             foreach(Particle particle in Particles)
             {
+                //deleting hash particles
+                hashingNeighbours.RemoveObject(particle);
                 if (particle.IsBoundaryParticle)
                 {
                     //continue;
@@ -293,7 +326,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                     }
                 }
             }
-            /*Parallel.ForEach(Particles, particle =>
+                        /*Parallel.ForEach(Particles, particle =>
             {
                 if (particle.IsBoundaryParticle)
                 {

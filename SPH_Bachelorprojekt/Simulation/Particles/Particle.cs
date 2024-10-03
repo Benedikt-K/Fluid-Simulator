@@ -8,12 +8,13 @@ using System.Threading.Tasks;
 
 namespace SPH_Bachelorprojekt.Simulation.Particles
 {
-    class Particle
+    public class Particle
     {
         public Vector2 Position;
         public Vector2 PositionNew;
         public Vector2 Velocity;
         public Vector2 PredictedVelocity;
+        public Vector2 D_i_i;
         public Vector2 Acceleration;
         public float Density;
         public float Mass;
@@ -21,6 +22,7 @@ namespace SPH_Bachelorprojekt.Simulation.Particles
         public bool IsBoundaryParticle;
         public List<Particle> Neighbours;
         public float Pressure;
+        public float NewPressure;
 
         public Particle(Vector2 position, float density, float particleSizeH, bool boundaryParticle=false)
         {
@@ -29,6 +31,7 @@ namespace SPH_Bachelorprojekt.Simulation.Particles
             Velocity = Vector2.Zero;
             PredictedVelocity = Vector2.Zero;
             Acceleration = Vector2.Zero;
+            D_i_i = Vector2.Zero;
             Density = density;
             ParticleSizeH = particleSizeH;
             IsBoundaryParticle = boundaryParticle;
@@ -36,6 +39,7 @@ namespace SPH_Bachelorprojekt.Simulation.Particles
             Mass = density * ParticleSizeH * ParticleSizeH;
             Neighbours = new List<Particle>();
             Pressure = 1f;
+            NewPressure = 0f;
         }
 
         public Particle(Vector2 position, Vector2 velocity, float density, float particleSizeH, bool boundaryParticle = false)

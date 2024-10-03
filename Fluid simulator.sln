@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31911.196
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPH_Bachelorprojekt", "SPH_Bachelorprojekt\SPH_Bachelorprojekt.csproj", "{147166B0-51AD-4045-BF61-784933C4C27B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fluid simulator", "SPH_Bachelorprojekt\Fluid simulator.csproj", "{147166B0-51AD-4045-BF61-784933C4C27B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
