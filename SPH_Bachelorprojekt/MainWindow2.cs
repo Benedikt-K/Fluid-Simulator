@@ -98,8 +98,11 @@ namespace SPH_Bachelorprojekt
                 //List<Particle> particles = spawner.TestSetup();
                 // TESTS
 
+                // TEST NEIGHBOURHOOD
                 NeighbourhoodSearchTest tests = new NeighbourhoodSearchTest();
                 tests.TestSpatialHashing();
+                tests.TestQuadratic();
+                // TEST NEIGHBOURHOOD
 
                 Console.WriteLine("Particles spawned");
                 Quadratic quadraticSolver = new Quadratic(particles, particleSizeH);
