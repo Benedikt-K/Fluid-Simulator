@@ -124,6 +124,7 @@
     <Compile Include="Simulation\Kernel Function\Kernel.cs" />
     <Compile Include="Simulation\MainSimulation\IISPH.cs" />
     <Compile Include="Simulation\MainSimulation\Standard.cs" />
+    <Compile Include="Simulation\Neighbours\NeighbourhoodSearchTest.cs" />
     <Compile Include="Simulation\Neighbours\Quadratic.cs" />
     <Compile Include="Simulation\MainSimulation\SimulationLoop.cs" />
     <Compile Include="Simulation\Neighbours\SpatialHashing.cs" />
