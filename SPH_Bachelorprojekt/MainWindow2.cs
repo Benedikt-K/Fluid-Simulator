@@ -10,6 +10,7 @@ using SPH_Bachelorprojekt.Simulation.Particles;
 using SPH_Bachelorprojekt.Utilities.ParticleUtils;
 using SPH_Bachelorprojekt.Simulation.Kernel_Function;
 using SPH_Bachelorprojekt.Simulation.MainSimulation;
+using SPH_Bachelorprojekt.Simulation.Neighbours;
 
 namespace SPH_Bachelorprojekt
 {
@@ -69,17 +70,17 @@ namespace SPH_Bachelorprojekt
                 // initialize window
                 uint videoY = 800;
                 var mode = new VideoMode(1400, videoY);
-                var window = new RenderWindow(mode, "SPH Simulation - Benedikt Kuss");
+                var window = new RenderWindow(mode, "Fluid Simulation - Benedikt Kuss");
                 var view = window.GetView();
                 window.KeyPressed += Window_KeyPressed;
                 ParticleSpawner spawner = new ParticleSpawner(startDensity, particleSizeH);
 
                 // Sim
-                List<Particle> particles = spawner.FluidColum();
+                //List<Particle> particles = spawner.FluidColum();
                 //List<Particle> particles = spawner.FluidColumWithOutRand();
                 //List<Particle> particles = spawner.DroppingFluidColumn();
                 //List<Particle> particles = spawner.DroppingFluidColumnBig();
-                //List<Particle> particles = spawner.BreakingDam();
+                List<Particle> particles = spawner.BreakingDam();
                 //List<Particle> particles = spawner.BreakingDamBig();
                 //List<Particle> particles = spawner.BreakingDamBigAndWide();
                 //List<Particle> particles = spawner.BreakingDamBigAndWideTestLimit();
@@ -102,7 +103,10 @@ namespace SPH_Bachelorprojekt
                 //IndexSort indexSortSolver = new IndexSort(particles, particleSizeH);
                 List<Particle> neighbours = new List<Particle>();
                 SimulationLoop simulationLoop = new SimulationLoop(particles, startDensity, particleSizeH, timeStep, viscosity, stiffness, gravity);
-
+                foreach (Particle particle in particles)
+                {
+                    simulationLoop.SpatialHashing.InsertObject(particle);
+                }
                 var circle = new SFML.Graphics.CircleShape((particleSizeH / 2f) * scaleFactorDrawing)
                 {
                     FillColor = SFML.Graphics.Color.White

@@ -14,6 +14,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
     {
         public List<Particle> Particles;
         public List<Particle> ParticlesUpdated;
+        public SpatialHashing SpatialHashing;
         public float Density;
         public float ParticleSizeH;
         public float TimeStep;
@@ -34,6 +35,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
         {
             Particles = particles;
             ParticlesUpdated = new List<Particle>();
+            SpatialHashing = new SpatialHashing((int) particleSizeH * 2);
             Density = density;
             ParticleSizeH = particleSizeH;
             TimeStep = timeStep;
@@ -128,15 +130,13 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
         }
 
             public void UpdateAllParticlesSPH(float smoothingLength, bool useNeighbour)
-        {
+        { 
             float restDensity = Density;
             float gravity = Gravity;
 
             ///
             /// Neighbour search
             ///
-            int CellSize = (int)(ParticleSizeH * 2); //// Particle Size must be int here
-            SpatialHashing hashingNeighbours = new SpatialHashing(CellSize);
             if (useNeighbour)
             {
                 //int CellSize = (int) (ParticleSizeH * 2); //// Particle Size must be int here
@@ -167,14 +167,11 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                     }
 
                 }*/
-                Parallel.ForEach(Particles, particle =>
-                {
-                    hashingNeighbours.InsertObject(particle);
-                });
+                
                 Parallel.ForEach(Particles, particle =>
                 {
                     //spatial hash
-                    hashingNeighbours.InRadius(particle.Position, ParticleSizeH * 2f, ref particle.Neighbours);
+                    SpatialHashing.InRadius(particle.Position, ParticleSizeH * 2f, ref particle.Neighbours);
                     //Quadratic neighbour
                     /*List <Particle> neighbours = quadraticSolver.GetNeighboursQuadratic(particle);
 
@@ -311,8 +308,8 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             // Update velocitys and positions
             foreach(Particle particle in Particles)
             {
-                //deleting hash particles
-                hashingNeighbours.RemoveObject(particle);
+                //deleting and later add hash particles (update basically)
+                SpatialHashing.RemoveObject(particle);
                 if (particle.IsBoundaryParticle)
                 {
                     //continue;
@@ -325,6 +322,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                         MaxVelocity = particle.Velocity.Length();
                     }
                 }
+                SpatialHashing.InsertObject(particle);
             }
                         /*Parallel.ForEach(Particles, particle =>
             {
@@ -346,6 +344,135 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             //Particles = ParticlesUpdated;
             //ParticlesUpdated = new List<Particle>();
 
+        }
+
+        public void UpdateAllParticlesSPHNotParallel(float smoothingLength, bool useNeighbour)
+        {
+            float restDensity = Density;
+            float gravity = Gravity;
+
+            ///
+            /// Neighbour search
+            ///
+            if (useNeighbour)
+            {
+                foreach (Particle particle in Particles) 
+                {
+                    SpatialHashing.InRadius(particle.Position, ParticleSizeH * 2f, ref particle.Neighbours);
+                }
+            }
+            else
+            {
+                Quadratic quadraticSolver = new Quadratic(Particles, ParticleSizeH);
+                foreach (Particle particle in Particles)
+                {
+                    // Quadratic neighbour 
+                    List<Particle> neighbours = quadraticSolver.GetNeighboursQuadratic(particle);
+                    // null reference check
+                    if (neighbours != null)
+                    {
+                        particle.Neighbours = neighbours;
+                        if (!particle.IsBoundaryParticle)
+                        {
+                            //Console.WriteLine("Neighbours Count: " + particle.Neighbours.Count);
+                        }
+                    }
+                    else
+                    {
+                        particle.Neighbours = new List<Particle>();
+                    }
+                }
+            }
+
+            //Console.WriteLine("Number Particles: " + Particles.Count);
+            //Console.WriteLine("Number Particles: " + Particles.Count);
+
+
+            // Compute Density and Pressure
+            Kernel kernel = new Kernel(smoothingLength);
+
+            // Test kernel
+            //kernel.TestKernel();
+            //CalculateNewTimeStep();
+
+            AverageDensity = 0f;
+            MaxCurrentParticlePressure = 0f;
+            int nonBoundaryParticlesCount = 0;
+            foreach (Particle particle in Particles)
+            {
+                if (!particle.IsBoundaryParticle)
+                {
+                    float newDensity = CalculateDensityAtParticle(particle, particle.Neighbours, kernel);   // calculate density only for fluid particles
+                    particle.Density = newDensity;
+                }
+                //float newDensity = CalculateDensityAtParticle(particle, particle.Neighbours, kernel);
+                //particle.Density = newDensity;
+                //Console.WriteLine("Density: " + particle.Density);
+                float pressure = Math.Max(Stiffness * ((particle.Density / (restDensity)) - 1), 0); // was negative before
+
+                if (pressure > MaxCurrentParticlePressure)
+                {
+                    MaxCurrentParticlePressure = pressure;
+                }
+
+                // Other pressure calculation
+                //float pressure = Stiffness * (particle.Density - restDensity);
+
+                //float pressure = Stiffness * ((particle.Density / restDensity) - 1);
+                //float pressure = -Stiffness * ((particle.Density / restDensity) - 1);
+                particle.Pressure = pressure;
+                if (!particle.IsBoundaryParticle)
+                {
+                    //AverageDensity += particle.Density;
+                    nonBoundaryParticlesCount++;
+                    //Console.WriteLine(particle.Pressure);
+                }
+                AverageDensity += particle.Density;
+            }
+            
+            //AverageDensity /= nonBoundaryParticlesCount;
+            AverageDensity /= Particles.Count;
+
+            // Compute accelerations
+            Parallel.ForEach(Particles, particle =>
+            {
+                if (!particle.IsBoundaryParticle)
+                {
+                    Vector2 acceleration_T = CalculatePressureAcceleration(particle, particle.Neighbours, kernel, particle.Density);
+                    acceleration_T += CalculateViscosityAcceleration(particle, particle.Neighbours, kernel);
+                    acceleration_T += CalculateSurfaceTensionAcceleration(particle, particle.Neighbours, kernel);
+                    if (particle.Mass != 0)
+                    {
+                        //acceleration_T = acceleration_T / particle.Mass;
+                    }
+                    else
+                    {
+                        acceleration_T = Vector2.Zero;
+                    }
+                    // Add gravity
+                    particle.Acceleration = acceleration_T + new Vector2(0, gravity);
+                }
+            });
+
+            // Update velocitys and positions
+            foreach (Particle particle in Particles)
+            {
+                //deleting hash particles
+                SpatialHashing.RemoveObject(particle);
+                if (particle.IsBoundaryParticle)
+                {
+                    //continue;
+                }
+                else
+                {
+                    UpdateParticle(particle, particle.Neighbours, kernel);
+                    if (particle.Velocity.Length() > MaxVelocity)
+                    {
+                        MaxVelocity = particle.Velocity.Length();
+                    }
+                }
+                SpatialHashing.InsertObject(particle);
+            }
         }
 
         public void UpdateParticleOld(Particle particle, List<Particle> neighbours, Kernel kernel)
