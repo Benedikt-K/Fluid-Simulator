@@ -167,10 +167,16 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                     }
 
                 }*/
+                SpatialHashing = new SpatialHashing((int)ParticleSizeH * 2);
+                foreach (Particle particle in Particles)
+                {
+                    SpatialHashing.InsertObject(particle);
+                }
                 
                 Parallel.ForEach(Particles, particle =>
                 {
                     //spatial hash
+                    
                     SpatialHashing.InRadius(particle.Position, ParticleSizeH * 2f, ref particle.Neighbours);
                     //Quadratic neighbour
                     /*List <Particle> neighbours = quadraticSolver.GetNeighboursQuadratic(particle);
@@ -192,7 +198,6 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                 });
             }
             
-            //Console.WriteLine("Number Particles: " + Particles.Count);
             //Console.WriteLine("Number Particles: " + Particles.Count);
 
 
@@ -309,7 +314,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             foreach(Particle particle in Particles)
             {
                 //deleting and later add hash particles (update basically)
-                SpatialHashing.RemoveObject(particle);
+                //SpatialHashing.RemoveObject(particle);
                 if (particle.IsBoundaryParticle)
                 {
                     //continue;
@@ -322,7 +327,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                         MaxVelocity = particle.Velocity.Length();
                     }
                 }
-                SpatialHashing.InsertObject(particle);
+                //SpatialHashing.InsertObject(particle);
             }
                         /*Parallel.ForEach(Particles, particle =>
             {
@@ -492,8 +497,10 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
 
         public void UpdateParticle(Particle particle, List<Particle> neighbours, Kernel kernel)
         {
+            //SpatialHashing.RemoveObject(particle);
             particle.Velocity += TimeStep * particle.Acceleration;
             particle.Position += TimeStep * particle.Velocity;
+            //SpatialHashing.InsertObject(particle);
         }
 
         public float CalculateDensityAtParticle(Particle particle, List<Particle> neighbours, Kernel kernel)

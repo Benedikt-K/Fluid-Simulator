@@ -49,13 +49,13 @@ namespace SPH_Bachelorprojekt
             {
                 // INITIALIZE IMPORTANT VARIABLES
                 float particleSizeH = 4f;                           // works with 8
-                float viscosity = 10f;                              // works with 10
-                float timeStep = 0.001f;                              // works with 0.2
+                float viscosity = 100f;                              // works with 10
+                float timeStep = 0.01f;                              // works with 0.2
                 float startDensity = 0.4f;                          // works with 0.3
                 float gravity = -0.8f;                              // works with -0.4
                 //float smoothingLength = 2 * particleSizeH;
                 float smoothingLength = particleSizeH;
-                float stiffness = 300f;                             // works with 300  -> größeres k kleinerer TimeStep
+                float stiffness = 1000f;                             // works with 300  -> größeres k kleinerer TimeStep
                 // Scaling for better visibility
                 float scaleFactorDrawing = 2f;
 
@@ -80,7 +80,7 @@ namespace SPH_Bachelorprojekt
                 //List<Particle> particles = spawner.FluidColumWithOutRand();
                 //List<Particle> particles = spawner.DroppingFluidColumn();
                 //List<Particle> particles = spawner.DroppingFluidColumnBig();
-                //List<Particle> particles = spawner.BreakingDam();
+                List<Particle> particles = spawner.BreakingDam();
                 //List<Particle> particles = spawner.BreakingDamBig();
                 //List<Particle> particles = spawner.BreakingDamBigAndWide();
                 //List<Particle> particles = spawner.BreakingDamBigAndWideTestLimit();
@@ -90,7 +90,7 @@ namespace SPH_Bachelorprojekt
                 // Sim
 
                 // TESTS
-                List<Particle> particles = spawner.TestOneParticleWithTwoLayerBoundarys();
+                //List<Particle> particles = spawner.TestOneParticleWithTwoLayerBoundarys();
                 //List<Particle> particles = spawner.TestOneParticleWithTwoLayerBoundarysOnOther();
                 //List<Particle> particles = spawner.TestParticlesInJarTwoLayerBoundaryWithSpacing();
                 //List<Particle> particles = spawner.TestParticlesInJarDroppingTwoLayerBoundary();
