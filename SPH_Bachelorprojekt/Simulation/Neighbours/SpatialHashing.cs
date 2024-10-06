@@ -24,8 +24,6 @@ namespace SPH_Bachelorprojekt.Simulation.Neighbours
         {
             vector = Vector2.Divide(vector, CellSize);
             Vector2 vectorFloored = new Vector2((float) Math.Floor(vector.X), (float) Math.Floor(vector.Y));
-            //vector.Floor();
-            //return vector;
             return vectorFloored;
         }
 
@@ -55,6 +53,7 @@ namespace SPH_Bachelorprojekt.Simulation.Neighbours
 
         public void InRadius(Vector2 position, float radius, ref List<Particle> particleInRadius)
         {
+            particleInRadius.Clear();
             var startX = (int)Math.Floor((position.X - radius) / CellSize);
             var endX = (int)Math.Ceiling((position.X + radius) / CellSize);
             var startY = (int)Math.Floor((position.Y - radius) / CellSize);

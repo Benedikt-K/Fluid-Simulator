@@ -139,7 +139,8 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             ///
             if (useNeighbour)
             {
-                SpatialHashing = new SpatialHashing((int)ParticleSizeH * 2);
+                int CellSize = (int) ParticleSizeH * 2; /// Particle Size should be int here
+                SpatialHashing = new SpatialHashing(CellSize);
                 foreach (Particle particle in Particles)
                 {
                     SpatialHashing.InsertObject(particle);
@@ -151,31 +152,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             }
             else
             {
-                //int CellSize = (int)(ParticleSizeH * 2); //// Particle Size must be int here
-                //SpatialHashing hashingNeighbours = new SpatialHashing(CellSize);
-                /////////////
-                Quadratic quadraticSolver = new Quadratic(Particles, ParticleSizeH);
-                /*foreach (Particle particle in Particles)
-                {
-                    // Quadratic neighbour 
-                    List<Particle> neighbours = quadraticSolver.GetNeighboursQuadratic(particle);
-                    // null reference check
-                    if (neighbours != null)
-                    {
-                        particle.Neighbours = neighbours;
-                        if (!particle.IsBoundaryParticle)
-                        {
-                            //Console.WriteLine("Neighbours Count: " + particle.Neighbours.Count);
-                        }
-                    }
-                    else
-                    {
-                        particle.Neighbours = new List<Particle>();
-                    }
-
-                }*/
-                
-                
+                Quadratic quadraticSolver = new Quadratic(Particles, ParticleSizeH);             
                 Parallel.ForEach(Particles, particle =>
                 {
                     //Quadratic neighbour
