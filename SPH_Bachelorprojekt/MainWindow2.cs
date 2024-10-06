@@ -10,7 +10,6 @@ using SPH_Bachelorprojekt.Simulation.Particles;
 using SPH_Bachelorprojekt.Utilities.ParticleUtils;
 using SPH_Bachelorprojekt.Simulation.Kernel_Function;
 using SPH_Bachelorprojekt.Simulation.MainSimulation;
-using SPH_Bachelorprojekt.Simulation.Neighbours;
 
 namespace SPH_Bachelorprojekt
 {
@@ -43,19 +42,19 @@ namespace SPH_Bachelorprojekt
             private bool DensityColors = false;
             // what to use for simulation
             public bool UseIISPH = false;
-            public bool UseNeighbour = false;
+            public bool UseNeighbour = true;
 
             public void Run()
             {
                 // INITIALIZE IMPORTANT VARIABLES
                 float particleSizeH = 4f;                           // works with 8
-                float viscosity = 100f;                              // works with 10
-                float timeStep = 0.01f;                              // works with 0.2
+                float viscosity = 10f;                              // works with 10
+                float timeStep = 0.07f;                              // works with 0.2
                 float startDensity = 0.4f;                          // works with 0.3
                 float gravity = -0.8f;                              // works with -0.4
                 //float smoothingLength = 2 * particleSizeH;
                 float smoothingLength = particleSizeH;
-                float stiffness = 1000f;                             // works with 300  -> größeres k kleinerer TimeStep
+                float stiffness = 4000f;                             // works with 300  -> größeres k kleinerer TimeStep
                 // Scaling for better visibility
                 float scaleFactorDrawing = 2f;
 
@@ -70,7 +69,7 @@ namespace SPH_Bachelorprojekt
                 // initialize window
                 uint videoY = 800;
                 var mode = new VideoMode(1400, videoY);
-                var window = new RenderWindow(mode, "Fluid Simulation - Benedikt Kuss");
+                var window = new RenderWindow(mode, "SPH Simulation - Benedikt Kuss");
                 var view = window.GetView();
                 window.KeyPressed += Window_KeyPressed;
                 ParticleSpawner spawner = new ParticleSpawner(startDensity, particleSizeH);
@@ -80,8 +79,8 @@ namespace SPH_Bachelorprojekt
                 //List<Particle> particles = spawner.FluidColumWithOutRand();
                 //List<Particle> particles = spawner.DroppingFluidColumn();
                 //List<Particle> particles = spawner.DroppingFluidColumnBig();
-                List<Particle> particles = spawner.BreakingDam();
-                //List<Particle> particles = spawner.BreakingDamBig();
+                //List<Particle> particles = spawner.BreakingDam();
+                List<Particle> particles = spawner.BreakingDamBig();
                 //List<Particle> particles = spawner.BreakingDamBigAndWide();
                 //List<Particle> particles = spawner.BreakingDamBigAndWideTestLimit();
                 //List<Particle> particles = spawner.FunnelIntoBox();
@@ -98,21 +97,12 @@ namespace SPH_Bachelorprojekt
                 //List<Particle> particles = spawner.TestSetup();
                 // TESTS
 
-                // TEST NEIGHBOURHOOD
-                NeighbourhoodSearchTest tests = new NeighbourhoodSearchTest();
-                tests.TestSpatialHashing();
-                tests.TestQuadratic();
-                // TEST NEIGHBOURHOOD
-
                 Console.WriteLine("Particles spawned");
                 Quadratic quadraticSolver = new Quadratic(particles, particleSizeH);
                 //IndexSort indexSortSolver = new IndexSort(particles, particleSizeH);
                 List<Particle> neighbours = new List<Particle>();
                 SimulationLoop simulationLoop = new SimulationLoop(particles, startDensity, particleSizeH, timeStep, viscosity, stiffness, gravity);
-                foreach (Particle particle in particles)
-                {
-                    simulationLoop.SpatialHashing.InsertObject(particle);
-                }
+
                 var circle = new SFML.Graphics.CircleShape((particleSizeH / 2f) * scaleFactorDrawing)
                 {
                     FillColor = SFML.Graphics.Color.White

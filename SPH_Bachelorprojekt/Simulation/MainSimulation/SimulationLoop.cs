@@ -139,8 +139,15 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             ///
             if (useNeighbour)
             {
-                //int CellSize = (int) (ParticleSizeH * 2); //// Particle Size must be int here
-                //SpatialHashing hashingNeighbours = new SpatialHashing(CellSize);
+                SpatialHashing = new SpatialHashing((int)ParticleSizeH * 2);
+                foreach (Particle particle in Particles)
+                {
+                    SpatialHashing.InsertObject(particle);
+                }
+                foreach (Particle particle in Particles)
+                {
+                    SpatialHashing.InRadius(particle.Position, ParticleSizeH * 2f, ref particle.Neighbours);
+                }
             }
             else
             {
@@ -167,19 +174,12 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                     }
 
                 }*/
-                SpatialHashing = new SpatialHashing((int)ParticleSizeH * 2);
-                foreach (Particle particle in Particles)
-                {
-                    SpatialHashing.InsertObject(particle);
-                }
+                
                 
                 Parallel.ForEach(Particles, particle =>
                 {
-                    //spatial hash
-                    
-                    SpatialHashing.InRadius(particle.Position, ParticleSizeH * 2f, ref particle.Neighbours);
                     //Quadratic neighbour
-                    /*List <Particle> neighbours = quadraticSolver.GetNeighboursQuadratic(particle);
+                    List <Particle> neighbours = quadraticSolver.GetNeighboursQuadratic(particle);
 
                     // null reference check
                     if (neighbours != null)
@@ -193,7 +193,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                     else
                     {
                         particle.Neighbours = new List<Particle>();
-                    }*/
+                    }
 
                 });
             }
