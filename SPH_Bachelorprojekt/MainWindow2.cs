@@ -80,9 +80,9 @@ namespace SPH_Bachelorprojekt
                 //List<Particle> particles = spawner.DroppingFluidColumn();
                 //List<Particle> particles = spawner.DroppingFluidColumnBig();
                 //List<Particle> particles = spawner.BreakingDam();
-                List<Particle> particles = spawner.BreakingDamBig();
+                //List<Particle> particles = spawner.BreakingDamBig();
                 //List<Particle> particles = spawner.BreakingDamBigAndWide();
-                //List<Particle> particles = spawner.BreakingDamBigAndWideTestLimit();
+                List<Particle> particles = spawner.BreakingDamBigAndWideTestLimit();
                 //List<Particle> particles = spawner.FunnelIntoBox();
                 //List<Particle> particles = spawner.BreakingDamBigWithHole();
                 //List<Particle> particles = spawner.BreakingDamOnBothSides();

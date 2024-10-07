@@ -15,14 +15,17 @@ namespace SPH_Bachelorprojekt.Simulation.Particles
         public Vector2 Velocity;
         public Vector2 PredictedVelocity;
         public Vector2 D_i_i;
+        public Vector2 A_i_i;
+        public Vector2 Dij_Pj;
         public Vector2 Acceleration;
+        public Vector2 NonPressureForces;
         public float Density;
         public float Mass;
         public float ParticleSizeH;
         public bool IsBoundaryParticle;
         public List<Particle> Neighbours;
         public float Pressure;
-        public float NewPressure;
+        public float PredictedPressure;
 
         public Particle(Vector2 position, float density, float particleSizeH, bool boundaryParticle=false)
         {
@@ -31,7 +34,10 @@ namespace SPH_Bachelorprojekt.Simulation.Particles
             Velocity = Vector2.Zero;
             PredictedVelocity = Vector2.Zero;
             Acceleration = Vector2.Zero;
+            NonPressureForces = Vector2.Zero;
             D_i_i = Vector2.Zero;
+            A_i_i = Vector2.Zero;
+            Dij_Pj = Vector2.Zero;
             Density = density;
             ParticleSizeH = particleSizeH;
             IsBoundaryParticle = boundaryParticle;
@@ -39,7 +45,7 @@ namespace SPH_Bachelorprojekt.Simulation.Particles
             Mass = density * ParticleSizeH * ParticleSizeH;
             Neighbours = new List<Particle>();
             Pressure = 1f;
-            NewPressure = 0f;
+            PredictedPressure = 0f;
         }
 
         public Particle(Vector2 position, Vector2 velocity, float density, float particleSizeH, bool boundaryParticle = false)
