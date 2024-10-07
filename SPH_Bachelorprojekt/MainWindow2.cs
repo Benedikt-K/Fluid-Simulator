@@ -41,7 +41,7 @@ namespace SPH_Bachelorprojekt
             private bool PressureColors = false;
             private bool DensityColors = false;
             // what to use for simulation
-            public bool UseIISPH = false;
+            public bool UseIISPH = true;
             public bool UseNeighbour = true;
 
             public void Run()
