@@ -200,21 +200,40 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                     particle.Dij_Pj = Dij_Pj;
                 }
                 //get new pressure
+                
                 foreach (Particle particle in Particles)
                 {
                     float p_i_l = (1 - RelaxationFactor) * particle.Pressure;
                     float volume = particle.Mass / particle.Density;
                     float dpi = volume / (particle.Density * particle.Density);
                     float sum = 0f;
+
                     foreach (Particle neighbour in particle.Neighbours)
                     {
-                        Vector2 dji = dpi * kernel.GradW(particle.Position, neighbour.Position);
-                        Vector2 d_ji_pi = dji * particle.Pressure;
-                        float neighbourVolume = neighbour.Mass / neighbour.Density;
-                        sum += neighbourVolume * Vector2.Dot((particle.Dij_Pj - particle.D_i_i * neighbour.Pressure - (neighbour.Dij_Pj - d_ji_pi)), kernel.GradW(particle.Position, neighbour.Position));
+                        ///
+                        /// Fluid neighbours
+                        ///
+                        if (!neighbour.IsBoundaryParticle) {
+                            Vector2 dji = dpi * kernel.GradW(particle.Position, neighbour.Position);
+                            Vector2 d_ji_pi = dji * particle.Pressure;
+                            float neighbourVolume = neighbour.Mass / neighbour.Density;
+                            sum += neighbourVolume * Vector2.Dot((particle.Dij_Pj - particle.D_i_i * neighbour.Pressure - (neighbour.Dij_Pj - d_ji_pi)), kernel.GradW(particle.Position, neighbour.Position));
+
+                        }
+                        ///
+                        /// Boundary neighbours
+                        ///
+                        else
+                        {
+                            Vector2 dji = dpi * kernel.GradW(particle.Position, neighbour.Position);
+                            Vector2 d_ji_pi = dji * particle.Pressure;
+                            float neighbourVolume = neighbour.Mass / neighbour.Density;
+                            sum += neighbourVolume * Vector2.Dot(particle.Dij_Pj, kernel.GradW(particle.Position, neighbour.Position));
+                        }
                     }
-                    // TODO: do createria for canceling while
+                            // TODO: do createria for canceling while
                 }
+            
 
                 // update predictedpressure to pressure
                 foreach (Particle particle in Particles)
