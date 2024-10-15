@@ -142,6 +142,11 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
 
         public void PredictAdvection(Kernel kernel)
         {
+            ///
+            /// for all particles:
+            /// Calculate diagonal term D_i_i, nonpressure-Forces and predicted Velocity
+            /// use to calculate A_i_i
+            ///
             foreach (Particle particle in Particles)
             {
                 float density = 0.0f;
@@ -184,6 +189,9 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
 
         public void PressureSolve(Kernel kernel)
         {
+            ///
+            /// calculate Pressures of all particles
+            ///
             int l = 0;
             float avgDensity_l = 0;
             while (avgDensity_l - Density > RelaxationFactor || l < 2)
@@ -248,7 +256,9 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
 
         public void Integrate(Kernel kernel)
         {
-            // update particle positions and velocitys
+            ///
+            /// update particle positions and velocitys
+            /// 
             foreach (Particle particle in Particles)
             {
                 if (!particle.IsBoundaryParticle)
