@@ -241,66 +241,83 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             ///
             /// calculate Pressures of all particles
             ///
-            int l = 0;
-            float avgDensity_l = 0;
-            while (avgDensity_l - Density > RelaxationFactor || l < 2)
+            // dislocate to other file
+            int min_Iterations = 1;
+            int max_Iterations = 2;
+            float max_error_Percentage = 5f; // given in %
+            // dislocate to other file
+            int currentIteration = 0;
+            float averageDensityError = 0;
+            bool continueWhile = false; 
+
+            while ((!continueWhile || (currentIteration < min_Iterations)) && (currentIteration < max_Iterations))
             {
-                // compute d_i_j-P_j
-                foreach (Particle particle in Particles)
-                {
-                    Vector2 Dij_Pj = Vector2.Zero;
-                    foreach (Particle neighbour in particle.Neighbours)
-                    {
-                        Dij_Pj -= (neighbour.Mass / (neighbour.Density * neighbour.Density)) * neighbour.Pressure * kernel.GradW(particle.Position, neighbour.Position);
-                    }
-                    Dij_Pj *= TimeStep * TimeStep;
-                    particle.Dij_Pj = Dij_Pj;
-                }
-                //get new pressure
-                
-                foreach (Particle particle in Particles)
-                {
-                    float p_i_l = (1 - RelaxationFactor) * particle.Pressure;
-                    float volume = particle.Mass / particle.Density;
-                    float dpi = volume / (particle.Density * particle.Density);
-                    float sum = 0f;
-
-                    foreach (Particle neighbour in particle.Neighbours)
-                    {
-                        ///
-                        /// Fluid neighbours
-                        ///
-                        if (!neighbour.IsBoundaryParticle) {
-                            Vector2 dji = dpi * kernel.GradW(particle.Position, neighbour.Position);
-                            Vector2 d_ji_pi = dji * particle.Pressure;
-                            float neighbourVolume = neighbour.Mass / neighbour.Density;
-                            sum += neighbourVolume * Vector2.Dot((particle.Dij_Pj - particle.D_i_i * neighbour.Pressure - (neighbour.Dij_Pj - d_ji_pi)), kernel.GradW(particle.Position, neighbour.Position));
-
-                        }
-                        ///
-                        /// Boundary neighbours
-                        ///
-                        else
-                        {
-                            Vector2 dji = dpi * kernel.GradW(particle.Position, neighbour.Position);
-                            Vector2 d_ji_pi = dji * particle.Pressure;
-                            float neighbourVolume = neighbour.Mass / neighbour.Density;
-                            sum += neighbourVolume * Vector2.Dot(particle.Dij_Pj, kernel.GradW(particle.Position, neighbour.Position));
-                        }
-                    }
-                            // TODO: do createria for canceling while
-                }
-            
-
-                // update predictedpressure to pressure
-                foreach (Particle particle in Particles)
-                {
-                    particle.Pressure = particle.PredictedPressure;
-                }
-                // add densty error /= #particles
-                l++;
+                continueWhile = true;
+                averageDensityError = 0;
+                DoPressureSolveIteration(kernel, averageDensityError);
+                float eta = max_error_Percentage * 0.01f * Density;
+                continueWhile = continueWhile && (averageDensityError <= eta);
+                currentIteration++;
             }
 
+        }
+
+        public void DoPressureSolveIteration(Kernel kernel, float averageDensityError)
+        {
+            // compute d_i_j-P_j
+            foreach (Particle particle in Particles)
+            {
+                Vector2 Dij_Pj = Vector2.Zero;
+                foreach (Particle neighbour in particle.Neighbours)
+                {
+                    Dij_Pj -= (neighbour.Mass / (neighbour.Density * neighbour.Density)) * neighbour.Pressure * kernel.GradW(particle.Position, neighbour.Position);
+                }
+                Dij_Pj *= TimeStep * TimeStep;
+                particle.Dij_Pj = Dij_Pj;
+            }
+            //get new pressure
+
+            foreach (Particle particle in Particles)
+            {
+                float p_i_l = (1 - RelaxationFactor) * particle.Pressure;
+                float volume = particle.Mass / particle.Density;
+                float dpi = volume / (particle.Density * particle.Density);
+                float sum = 0f;
+
+                foreach (Particle neighbour in particle.Neighbours)
+                {
+                    ///
+                    /// Fluid neighbours
+                    ///
+                    if (!neighbour.IsBoundaryParticle)
+                    {
+                        Vector2 dji = dpi * kernel.GradW(particle.Position, neighbour.Position);
+                        Vector2 d_ji_pi = dji * particle.Pressure;
+                        float neighbourVolume = neighbour.Mass / neighbour.Density;
+                        sum += neighbourVolume * Vector2.Dot((particle.Dij_Pj - particle.D_i_i * neighbour.Pressure - (neighbour.Dij_Pj - d_ji_pi)), kernel.GradW(particle.Position, neighbour.Position));
+
+                    }
+                    ///
+                    /// Boundary neighbours
+                    ///
+                    else
+                    {
+                        Vector2 dji = dpi * kernel.GradW(particle.Position, neighbour.Position);
+                        Vector2 d_ji_pi = dji * particle.Pressure;
+                        float neighbourVolume = neighbour.Mass / neighbour.Density;
+                        sum += neighbourVolume * Vector2.Dot(particle.Dij_Pj, kernel.GradW(particle.Position, neighbour.Position));
+                    }
+                }
+                // TODO: do createria for canceling while
+            }
+
+
+            // update predictedpressure to pressure
+            foreach (Particle particle in Particles)
+            {
+                particle.Pressure = particle.PredictedPressure;
+            }
+            // add densty error /= #particles
         }
 
         public void Integrate(Kernel kernel)
