@@ -73,5 +73,12 @@ namespace SPH_Bachelorprojekt.Simulation.Particles
             Neighbours = new List<Particle>();
         }
 
+        public float GetVolume()
+        {
+            float volume = 0f;
+            volume = Mass / Density;
+            return volume;
+        }
+
     }
 }

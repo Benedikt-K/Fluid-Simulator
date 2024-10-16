@@ -264,24 +264,33 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
 
         public void DoPressureSolveIteration(Kernel kernel, float averageDensityError)
         {
+            float timeStep2 = TimeStep * TimeStep;
+            float omega = 0.5f;
+
             // compute d_i_j-P_j
             foreach (Particle particle in Particles)
             {
                 Vector2 Dij_Pj = Vector2.Zero;
                 foreach (Particle neighbour in particle.Neighbours)
                 {
-                    Dij_Pj -= (neighbour.Mass / (neighbour.Density * neighbour.Density)) * neighbour.Pressure * kernel.GradW(particle.Position, neighbour.Position);
+                    float neighbourRelativeDensity = neighbour.Density / Density;
+                    float neighbourRelativeDensity2 = neighbourRelativeDensity * neighbourRelativeDensity;
+                    float neighbourVolume = particle.GetVolume();
+
+                    Dij_Pj -= neighbourVolume / neighbourRelativeDensity2 * neighbour.Pressure * kernel.GradW(particle.Position, neighbour.Position);
                 }
-                Dij_Pj *= TimeStep * TimeStep;
+                //Dij_Pj *= TimeStep * TimeStep;
                 particle.Dij_Pj = Dij_Pj;
             }
-            //get new pressure
 
+            //calculate new pressure
             foreach (Particle particle in Particles)
             {
                 float p_i_l = (1 - RelaxationFactor) * particle.Pressure;
-                float volume = particle.Mass / particle.Density;
-                float dpi = volume / (particle.Density * particle.Density);
+                float volume = particle.GetVolume();
+                float relDensity = particle.Density / Density;
+                float relDensity2 = relDensity * relDensity;
+                float dpi = volume / relDensity2;
                 float sum = 0f;
 
                 foreach (Particle neighbour in particle.Neighbours)
@@ -293,7 +302,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                     {
                         Vector2 dji = dpi * kernel.GradW(particle.Position, neighbour.Position);
                         Vector2 d_ji_pi = dji * particle.Pressure;
-                        float neighbourVolume = neighbour.Mass / neighbour.Density;
+                        float neighbourVolume = neighbour.GetVolume();
                         sum += neighbourVolume * Vector2.Dot((particle.Dij_Pj - particle.D_i_i * neighbour.Pressure - (neighbour.Dij_Pj - d_ji_pi)), kernel.GradW(particle.Position, neighbour.Position));
 
                     }
@@ -302,13 +311,32 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                     ///
                     else
                     {
-                        Vector2 dji = dpi * kernel.GradW(particle.Position, neighbour.Position);
-                        Vector2 d_ji_pi = dji * particle.Pressure;
-                        float neighbourVolume = neighbour.Mass / neighbour.Density;
-                        sum += neighbourVolume * Vector2.Dot(particle.Dij_Pj, kernel.GradW(particle.Position, neighbour.Position));
+                        float neighbourVolume = neighbour.GetVolume();
+                        sum += neighbourVolume * Vector2.Dot(neighbour.Dij_Pj, kernel.GradW(particle.Position, neighbour.Position));
                     }
                 }
-                // TODO: do createria for canceling while
+                //createria for canceling while
+
+                float b = 1 - 0; //DENSITY ADV ????????????
+                float factor = particle.A_i_i * TimeStep * TimeStep;
+
+                // check for division by 0 or other very small value
+                if (Math.Abs(factor) > 1.0e-9)
+                {
+                    particle.PredictedPressure = Math.Max((1 - omega) * particle.Pressure + omega / factor * (b - timeStep2 * sum), 0f);
+                }
+                else
+                {
+                    particle.PredictedPressure = 0f;
+                }
+
+                if (particle.PredictedPressure != 0f)
+                {
+                    float newDensity = Density * ((particle.A_i_i * particle.PredictedPressure + sum) * timeStep2 - b) + Density;
+
+                    averageDensityError += newDensity - Density;
+                }
+
             }
 
 
@@ -317,7 +345,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             {
                 particle.Pressure = particle.PredictedPressure;
             }
-            // add densty error /= #particles
+            averageDensityError /= Particles.Count;
         }
 
         public void Integrate(Kernel kernel)
