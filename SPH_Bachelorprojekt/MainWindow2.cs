@@ -58,7 +58,6 @@ namespace SPH_Bachelorprojekt
                 // Scaling for better visibility
                 float scaleFactorDrawing = 2f;
 
-                
 
                 // for plotting later
                 StartingDensity = startDensity;

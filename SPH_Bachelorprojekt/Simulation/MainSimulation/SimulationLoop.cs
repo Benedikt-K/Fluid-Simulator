@@ -351,6 +351,14 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
         public void Integrate(Kernel kernel)
         {
             ///
+            /// compute pressure Acceleration
+            ///
+            foreach (Particle particle in Particles)
+            {
+
+            }
+
+            ///
             /// update particle positions and velocitys
             /// 
             foreach (Particle particle in Particles)
@@ -358,7 +366,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                 if (!particle.IsBoundaryParticle)
                 {
                     particle.Velocity = particle.PredictedVelocity + TimeStep * CalculatePressureAcceleration(particle, particle.Neighbours, kernel);
-                    particle.Position = particle.Position + TimeStep * particle.Velocity;
+                    particle.Position += TimeStep * particle.Velocity;
                 }
             }
         }
