@@ -1,11 +1,13 @@
 ﻿if checking for IISPH or standart -- done
 if checking for neighbour search  -- done
-Linked list neighbour?
-spatial hasing neighbour
+spatial hasing neighbour  -- done
 IISPH implement
 testing/fixing kernel -> 2h
 despawner implement
 spawner single particle function with speed
 szenario with fluid out of pipe
 maybe add possibility to import 3D models (have to add third dimension before that)
-why sparticles despawn/not visible sometimes
+why particles despawn/not visible sometimes
+
+investigate Density0 of particles in code/theory
+what AddForce() ????

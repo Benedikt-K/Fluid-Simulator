@@ -355,7 +355,34 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             ///
             foreach (Particle particle in Particles)
             {
+                float densityCoefficient = particle.Density / Density;
+                float densityCoefficient2 = densityCoefficient * densityCoefficient;
+                Vector2 pressureAcceleration = Vector2.Zero;
+                float dpi = particle.PredictedPressure / densityCoefficient2;
 
+                foreach (Particle neighbour in particle.Neighbours)
+                {
+                    if (!neighbour.IsBoundaryParticle)
+                    {
+                        ///
+                        /// Fluid neighbours
+                        ///
+                        float neighbourDensityCoe = neighbour.Density / Density;
+                        float neighbourDensityCoe2 = neighbourDensityCoe * neighbourDensityCoe;
+                        float dpj = neighbour.PredictedPressure / densityCoefficient2;
+                        float neighbourVolume = neighbour.GetVolume();
+                        pressureAcceleration += neighbourVolume * (dpi + Density / Density * dpj) * kernel.GradW(particle.Position, neighbour.Position);
+                    }
+                    else
+                    {
+                        ///
+                        /// Boundary neighbours
+                        ///
+                        Vector2 boundaryAcceleration = neighbour.GetVolume() * dpi * kernel.GradW(particle.Position, neighbour.Position);
+                        pressureAcceleration -= boundaryAcceleration;
+                        // bm_neighbor->addForce(xj, model->getMass(i) * a); ?????? what dis
+                    }
+                }
             }
 
             ///
