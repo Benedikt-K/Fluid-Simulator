@@ -18,6 +18,7 @@ namespace SPH_Bachelorprojekt.Simulation.Particles
         public float A_i_i;
         public Vector2 Dij_Pj;
         public Vector2 Acceleration;
+        public Vector2 PressureAcceleration;
         public Vector2 NonPressureForces;
         public float Density;
         public float Mass;
@@ -34,6 +35,7 @@ namespace SPH_Bachelorprojekt.Simulation.Particles
             Velocity = Vector2.Zero;
             PredictedVelocity = Vector2.Zero;
             Acceleration = Vector2.Zero;
+            PressureAcceleration = Vector2.Zero;
             NonPressureForces = Vector2.Zero;
             D_i_i = Vector2.Zero;
             A_i_i = 0.0f;
