@@ -51,7 +51,7 @@ namespace SPH_Bachelorprojekt
                 float viscosity = 10f;                              // works with 10
                 float timeStep = 0.07f;                              // works with 0.2
                 float startDensity = 0.4f;                          // works with 0.3
-                float gravity = -0.8f;                              // works with -0.4
+                float gravity = -0.0f;                              // works with -0.4
                 //float smoothingLength = 2 * particleSizeH;
                 float smoothingLength = particleSizeH;
                 float stiffness = 4000f;                             // works with 300  -> größeres k kleinerer TimeStep

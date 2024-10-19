@@ -180,6 +180,10 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                 }
                 //diagonalTerm *= TimeStep * TimeStep;
                 particle.D_i_i = diagonalTerm;
+                if (particle.D_i_i != Vector2.Zero)
+                {
+                    Console.WriteLine("not 0 dii: " + particle.D_i_i);
+                }
             }
 
             foreach (Particle particle in Particles)
@@ -250,11 +254,14 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             float averageDensityError = 0;
             bool continueWhile = false; 
 
-            while ((!continueWhile || (currentIteration < min_Iterations)) && (currentIteration < max_Iterations))
+            //while ((!continueWhile || (currentIteration < min_Iterations)) && (currentIteration < max_Iterations))
+            while (currentIteration < 3)
             {
                 continueWhile = true;
                 averageDensityError = 0;
                 DoPressureSolveIteration(kernel, averageDensityError);
+                //Console.WriteLine("current iteration: " + currentIteration);
+                //Console.WriteLine("average density error: " + averageDensityError);
                 float eta = max_error_Percentage * 0.01f * Density;
                 continueWhile = continueWhile && (averageDensityError <= eta);
                 currentIteration++;
@@ -346,6 +353,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                 particle.Pressure = particle.PredictedPressure;
             }
             averageDensityError /= Particles.Count;
+            
         }
 
         public void Integrate(Kernel kernel)

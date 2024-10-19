@@ -9,5 +9,5 @@ szenario with fluid out of pipe
 maybe add possibility to import 3D models (have to add third dimension before that)
 why particles despawn/not visible sometimes
 
-investigate Density0 of particles in code/theory
+diagonal elemt wrong -> always zero
 what AddForce() ????
