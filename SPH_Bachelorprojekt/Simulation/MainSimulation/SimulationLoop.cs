@@ -242,7 +242,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
 
                 diagonalTerm *= TimeStep * TimeStep;
                 particle.DiagonalElement = diagonalTerm;
-                //particle.Pressure = 0;
+                particle.PredictedPressure = 0;
 
                 if (particle.DiagonalElement != 0)
                 {
@@ -362,6 +362,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                     }*/
                     particle.Velocity = TimeStep * particle.PressureAcceleration + particle.PredictedVelocity;
                     particle.Position += TimeStep * particle.Velocity;
+                    //particle.Pressure = particle.PredictedPressure;
                 }
             }
         }
