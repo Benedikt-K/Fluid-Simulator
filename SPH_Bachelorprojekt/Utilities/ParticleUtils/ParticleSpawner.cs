@@ -255,6 +255,38 @@ namespace SPH_Bachelorprojekt.Utilities.ParticleUtils
             return particleList;
         }
 
+        public List<Particle> BreakingDamOneLayer()
+        {
+            List<Particle> particleList = new List<Particle>();
+            float magitudeOfDeviation = 0.1f;
+
+            // Spawn boundarys
+            int maxI = 85;
+            int maxJ = 45;
+            for (int i = 5; i < maxI; i += 1)
+            {
+                for (int j = 5; j < maxJ; j += 1)
+                {
+                    if (i < 6 || i > maxI - 2 || j < 6 || j > maxJ - 2)
+                    {
+                        Particle particle = new Particle(new Vector2(i * ParticleSizeH, j * ParticleSizeH), Density, ParticleSizeH, true);
+                        particleList.Add(particle);
+                    }
+                }
+            }
+
+            // spawn fluid
+            for (int i = 7; i < 16; i++)
+            {
+                for (int j = 7; j < 18; j++)
+                {
+                    Particle particle1 = new Particle(new Vector2(i * ParticleSizeH + GetRandomValue(magitudeOfDeviation), j * ParticleSizeH + GetRandomValue(magitudeOfDeviation)), Density, ParticleSizeH, false);
+                    particleList.Add(particle1);
+                }
+            }
+            return particleList;
+        }
+
         public List<Particle> BreakingDamBig()
         {
             List<Particle> particleList = new List<Particle>();

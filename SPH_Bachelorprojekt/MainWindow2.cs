@@ -47,10 +47,10 @@ namespace SPH_Bachelorprojekt
             public void Run()
             {
                 // INITIALIZE IMPORTANT VARIABLES
-                float particleSizeH = 4f;                           // works with 8
+                float particleSizeH = 5f;                           // works with 8
                 float viscosity = 10f;                              // works with 10
-                float timeStep = 0.8f;                              // works with 0.2
-                float startDensity = 0.4f;                          // works with 0.3
+                float timeStep = 0.08f;                              // works with 0.2
+                float startDensity = 0.3f;                          // works with 0.3
                 float gravity = -0.8f;                              // works with -0.4
                 //float smoothingLength = 2 * particleSizeH;
                 float smoothingLength = particleSizeH;
@@ -78,10 +78,11 @@ namespace SPH_Bachelorprojekt
                 //List<Particle> particles = spawner.FluidColumWithOutRand();
                 //List<Particle> particles = spawner.DroppingFluidColumn();
                 //List<Particle> particles = spawner.DroppingFluidColumnBig();
-                //List<Particle> particles = spawner.BreakingDam();
+                List<Particle> particles = spawner.BreakingDam();
+                //List<Particle> particles = spawner.BreakingDamOneLayer();
                 //List<Particle> particles = spawner.BreakingDamBig();
                 //List<Particle> particles = spawner.BreakingDamBigAndWide();
-                List<Particle> particles = spawner.BreakingDamBigAndWideTestLimit();
+                //List<Particle> particles = spawner.BreakingDamBigAndWideTestLimit();
                 //List<Particle> particles = spawner.FunnelIntoBox();
                 //List<Particle> particles = spawner.BreakingDamBigWithHole();
                 //List<Particle> particles = spawner.BreakingDamOnBothSides();
