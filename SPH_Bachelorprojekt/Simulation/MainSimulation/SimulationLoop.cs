@@ -23,6 +23,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
         public float Stiffness;
         public float minDensity;
         public float Gravity;
+        public int FluidParticleCount;
 
         public float AverageDensity;
         public float MaxCurrentParticlePressure;
@@ -48,6 +49,15 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             RelaxationFactor = 0.5f;
             Gamma = 0.7f;
             //minDensity = 0f;
+            int fluidCount = 0;
+            foreach (Particle particle in Particles)
+            {
+                if (!particle.IsBoundaryParticle)
+                {
+                    fluidCount++;
+                }
+            }
+            FluidParticleCount = fluidCount;
         }
 
         public SimulationLoop(float density, float particleSizeH, float timeStep, float viscosity)
@@ -249,30 +259,31 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             /// calculate Pressures of all particles
             ///
             // dislocate to other file
-            int min_Iterations = 1;
-            int max_Iterations = 3;
-            float max_error_Percentage = 5f; // given in %
+            int min_Iterations = 4;
+            int max_Iterations = 40;
+            float max_error_Percentage = 1f; // given in %
             // dislocate to other file
             int currentIteration = 1;
-            float averageDensityError = 0;
-            bool continueWhile = false; 
+            float averageDensityError = float.PositiveInfinity;
+            bool continueWhile = true; 
 
             
 
-            //while ((!continueWhile || (currentIteration < min_Iterations)) && (currentIteration < max_Iterations))
-            while (currentIteration < 10)
+            while ((continueWhile || (currentIteration <= min_Iterations)) && (currentIteration < max_Iterations))
+            //while (currentIteration < 10)
             {
                 continueWhile = true;
                 averageDensityError = 0;
-                DoPressureSolveIteration(kernel, averageDensityError);
+                DoPressureSolveIteration(kernel, ref averageDensityError);
                 float eta = max_error_Percentage * 0.01f * Density;
-                continueWhile = continueWhile && (averageDensityError <= eta);
+                continueWhile = averageDensityError >= eta;
+                Console.WriteLine("iter: " + currentIteration + ", err: " + averageDensityError + ", eta: " + eta);
                 currentIteration++;
             }
 
         }
 
-        public void DoPressureSolveIteration(Kernel kernel, float averageDensityError)
+        public void DoPressureSolveIteration(Kernel kernel, ref float averageDensityError)
         {
             // compute pressureAcc
             foreach (Particle particle in Particles) if (!particle.IsBoundaryParticle)
@@ -327,7 +338,6 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                 }
                 averageDensityError += Ap - particle.SourceTerm;
             }
-
             averageDensityError /= Particles.Count;
 
         }
