@@ -13,6 +13,8 @@ namespace SPH_Bachelorprojekt.Simulation.Kernel_Function
         private float h2; 
         private float alpha; // Normalization factor 2D
 
+        private const float kernelCorrection = 0.04f / 0.0400344729f;
+
         public Kernel(float ParticleSize)
         {
             h = ParticleSize; // works with Kernel support of h
@@ -27,7 +29,7 @@ namespace SPH_Bachelorprojekt.Simulation.Kernel_Function
             var t1 = Math.Max(1 - d, 0);
             var t2 = Math.Max(2 - d, 0);
             var t3 = (t2 * t2 * t2) - 4 * (t1 * t1 * t1);
-            return alpha * t3;
+            return alpha * t3 * kernelCorrection;
         }
 
         
