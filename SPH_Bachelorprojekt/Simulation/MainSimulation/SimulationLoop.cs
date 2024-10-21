@@ -259,9 +259,9 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             /// calculate Pressures of all particles
             ///
             // dislocate to other file
-            int min_Iterations = 4;
+            int min_Iterations = 5;
             int max_Iterations = 40;
-            float max_error_Percentage = 1f; // given in %
+            float max_error_Percentage = 0.1f; // given in %
             // dislocate to other file
             int currentIteration = 1;
             float averageDensityError = float.PositiveInfinity;
@@ -277,7 +277,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                 DoPressureSolveIteration(kernel, ref averageDensityError);
                 float eta = max_error_Percentage * 0.01f * Density;
                 continueWhile = averageDensityError >= eta;
-                Console.WriteLine("iter: " + currentIteration + ", err: " + averageDensityError + ", eta: " + eta);
+                //Console.WriteLine("iter: " + currentIteration + ", err: " + averageDensityError + ", eta: " + eta);
                 currentIteration++;
             }
 
@@ -332,7 +332,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                 // update pressure
                 if (particle.DiagonalElement != 0)
                 {
-                    particle.Pressure = particle.PredictedPressure;
+                    //particle.Pressure = particle.PredictedPressure;
                     float innerTerm = particle.PredictedPressure + omega * ((particle.SourceTerm - Ap) / particle.DiagonalElement);
                     particle.PredictedPressure = Math.Max(innerTerm, 0);
                 }
@@ -351,7 +351,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             {
                 if (!particle.IsBoundaryParticle)
                 {
-                    
+
                     /*if (CalculateParticleLambdaCFL(TimeStep * particle.PressureAcceleration + particle.PredictedVelocity) > 1)
                     {
                         particle.Velocity = particle.Velocity;
@@ -360,6 +360,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                     {
                         particle.Velocity = TimeStep * particle.PressureAcceleration + particle.PredictedVelocity;
                     }*/
+                    //particle.Pressure = particle.PredictedPressure;
                     particle.Velocity = TimeStep * particle.PressureAcceleration + particle.PredictedVelocity;
                     particle.Position += TimeStep * particle.Velocity;
                     //particle.Pressure = particle.PredictedPressure;
