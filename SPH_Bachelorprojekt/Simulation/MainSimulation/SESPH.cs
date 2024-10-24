@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 namespace SPH_Bachelorprojekt.Simulation.MainSimulation
 {
     /// <summary>
-    /// functions to compute the pressure using a global pressure computation
+    /// functions to compute the pressure using a state equation
     /// </summary>
-    class IISPH
+    class SESPH
     {
 
     }
