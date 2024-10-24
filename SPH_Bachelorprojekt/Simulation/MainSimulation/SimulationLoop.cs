@@ -266,9 +266,9 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             /// calculate Pressures of all particles
             ///
             // dislocate to other file
-            int min_Iterations = 15;
-            int max_Iterations = 50;
-            float max_error_Percentage = 1f; // given in %
+            int min_Iterations = 200;
+            int max_Iterations = 500;
+            float max_error_Percentage = 0.001f; // given in %
             // dislocate to other file
             int currentIteration = 0;
             float averageDensityError = float.PositiveInfinity;
@@ -276,7 +276,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             float percentageDensityError = float.PositiveInfinity;
 
 
-            while ((continueWhile || (currentIteration <= min_Iterations)) && (currentIteration < max_Iterations))
+            while ((continueWhile || (currentIteration < min_Iterations)) && (currentIteration < max_Iterations))
             //while (currentIteration < 10)
             {
                 currentIteration++;
@@ -285,10 +285,14 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                 percentageDensityError = averageDensityError / Density;
                 float eta = max_error_Percentage * 0.01f * Density;
                 continueWhile = averageDensityError >= eta;
-                //Console.WriteLine("iter: " + currentIteration + ", err: " + percentageDensityError);
+                //Console.WriteLine("iter: " + currentIteration + ", err: " + averageDensityError);
                 
             }
-            Console.WriteLine("iterations needed: " + currentIteration);
+            if (currentIteration != 3)
+            {
+                Console.WriteLine("iterations needed: " + currentIteration);
+            }
+
         }
 
         public void DoPressureSolveIteration(Kernel kernel, ref float averageDensityError)
@@ -361,19 +365,9 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             {
                 if (!particle.IsBoundaryParticle)
                 {
-
-                    /*if (CalculateParticleLambdaCFL(TimeStep * particle.PressureAcceleration + particle.PredictedVelocity) > 1)
-                    {
-                        particle.Velocity = particle.Velocity;
-                    }
-                    else
-                    {
-                        particle.Velocity = TimeStep * particle.PressureAcceleration + particle.PredictedVelocity;
-                    }*/
-                    //particle.Pressure = particle.PredictedPressure;
+                    particle.Pressure = particle.PredictedPressure;
                     particle.Velocity = TimeStep * particle.PressureAcceleration + particle.PredictedVelocity;
                     particle.Position += TimeStep * particle.Velocity;
-                    //particle.Pressure = particle.PredictedPressure;
                 }
             }
         }

@@ -75,7 +75,7 @@ namespace SPH_Bachelorprojekt
 
                 // Sim
                 //List<Particle> particles = spawner.FluidColum();
-                //List<Particle> particles = spawner.FluidColumOneLayerBoundary();
+                List<Particle> particles = spawner.FluidColumOneLayerBoundary();
                 //List<Particle> particles = spawner.FluidColumWithOutRand();
                 //List<Particle> particles = spawner.DroppingFluidColumn();
                 //List<Particle> particles = spawner.DroppingFluidColumnBig();
@@ -85,7 +85,7 @@ namespace SPH_Bachelorprojekt
                 //List<Particle> particles = spawner.BreakingDamBigAndWide();
                 //List<Particle> particles = spawner.BreakingDamBigAndWideTestLimit();
                 //List<Particle> particles = spawner.BreakingDamBigAndWideTestLimitOneLayerBoundary();
-                List<Particle> particles = spawner.FunnelIntoBox();
+                //List<Particle> particles = spawner.FunnelIntoBox();
                 //List<Particle> particles = spawner.BreakingDamBigWithHole();
                 //List<Particle> particles = spawner.BreakingDamOnBothSides();
                 // Sim
