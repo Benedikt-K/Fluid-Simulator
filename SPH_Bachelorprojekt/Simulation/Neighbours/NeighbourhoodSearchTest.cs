@@ -28,7 +28,7 @@ namespace SPH_Bachelorprojekt.Simulation.Neighbours
             }
             foreach (Particle particle in particles)
             {
-                spatialHashing.IsNeighbour(particle.Position, ParticleSize * 2f, ref particle.Neighbours);
+                spatialHashing.GetNeighbours(particle.Position, ParticleSize * 2f, ref particle.Neighbours);
                 //Console.WriteLine("neighbour count: " + particle.Neighbours.Count);
             }
             

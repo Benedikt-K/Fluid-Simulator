@@ -100,7 +100,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                 }
                 foreach (Particle particle in Particles)
                 {
-                    SpatialHashing.IsNeighbour(particle.Position, ParticleSizeH * 2f, ref particle.Neighbours);
+                    SpatialHashing.GetNeighbours(particle.Position, ParticleSizeH * 2f, ref particle.Neighbours);
                 }
             }
             else
@@ -418,7 +418,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                 }
                 foreach (Particle particle in Particles)
                 {
-                    SpatialHashing.IsNeighbour(particle.Position, ParticleSizeH * 2f, ref particle.Neighbours);
+                    SpatialHashing.GetNeighbours(particle.Position, ParticleSizeH * 2f, ref particle.Neighbours);
                 }
             }
             else
@@ -611,7 +611,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             {
                 foreach (Particle particle in Particles) 
                 {
-                    SpatialHashing.IsNeighbour(particle.Position, ParticleSizeH * 2f, ref particle.Neighbours);
+                    SpatialHashing.GetNeighbours(particle.Position, ParticleSizeH * 2f, ref particle.Neighbours);
                 }
             }
             else
