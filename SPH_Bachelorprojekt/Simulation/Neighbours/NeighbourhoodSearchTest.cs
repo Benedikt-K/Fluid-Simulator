@@ -22,13 +22,13 @@ namespace SPH_Bachelorprojekt.Simulation.Neighbours
                 for (int j = 0; j < 5; j++)
                 {
                     Particle newParticle = new Particle(new Vector2(i * ParticleSize, j * ParticleSize), 1f, ParticleSize);
-                    spatialHashing.InsertObject(newParticle);
+                    spatialHashing.AddParticle(newParticle);
                     particles.Add(newParticle);
                 }
             }
             foreach (Particle particle in particles)
             {
-                spatialHashing.InRadius(particle.Position, ParticleSize * 2f, ref particle.Neighbours);
+                spatialHashing.IsNeighbour(particle.Position, ParticleSize * 2f, ref particle.Neighbours);
                 //Console.WriteLine("neighbour count: " + particle.Neighbours.Count);
             }
             

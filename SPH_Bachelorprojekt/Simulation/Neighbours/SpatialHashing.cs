@@ -13,7 +13,7 @@ namespace SPH_Bachelorprojekt.Simulation.Neighbours
     {
         public int Count { get; private set; }
         public int CellSize;
-        private readonly Dictionary<Vector2, HashSet<Particle>> mSpatialGrids = new Dictionary<Vector2, HashSet<Particle>>();
+        private readonly Dictionary<Vector2, HashSet<Particle>> SpatialGrid = new Dictionary<Vector2, HashSet<Particle>>();
 
         public SpatialHashing(int cellSize)
         {
@@ -27,53 +27,62 @@ namespace SPH_Bachelorprojekt.Simulation.Neighbours
             return vectorFloored;
         }
 
-        public void InsertObject(Particle particle)
+        public void AddParticle(Particle particle)
         {
-            var hash = Hash(particle.Position);
-            if (!mSpatialGrids.TryGetValue(hash, out var objectBucket))
+            Vector2 hash = Hash(particle.Position);
+            if (!SpatialGrid.TryGetValue(hash, out var objectBucket))
             {
                 objectBucket = new HashSet<Particle>();
-                mSpatialGrids[hash] = objectBucket;
+                SpatialGrid[hash] = objectBucket;
             }
             objectBucket.Add(particle);
             Count++;
         }
 
-        public void RemoveObject(Particle particle)
+        public void RemoveParticle(Particle particle)
         {
             var hash = Hash(particle.Position);
-            if (!mSpatialGrids.TryGetValue(hash, out var objectBucket)) return;
-            if (!objectBucket.Remove(particle)) return;
+            if (!SpatialGrid.TryGetValue(hash, out HashSet<Particle> objectBucket))
+            {
+                return;
+            }
+            if (!objectBucket.Remove(particle))
+            {
+                return;
+            }
             Count--;
-            mSpatialGrids[hash] = objectBucket;
-            if (objectBucket.Count == 0) mSpatialGrids.Remove(hash);
+            SpatialGrid[hash] = objectBucket;
+            if (objectBucket.Count == 0)
+            {
+                SpatialGrid.Remove(hash);
+            }
         }
 
-        public void Clear() => mSpatialGrids.Clear();
+        public void Clear() => SpatialGrid.Clear();
 
-        public void InRadius(Vector2 position, float radius, ref List<Particle> particleInRadius)
+        public void IsNeighbour(Vector2 position, float radius, ref List<Particle> particleInSearchRadius)
         {
-            particleInRadius.Clear();
-            var startX = (int)Math.Floor((position.X - radius) / CellSize);
-            var endX = (int)Math.Ceiling((position.X + radius) / CellSize);
-            var startY = (int)Math.Floor((position.Y - radius) / CellSize);
-            var endY = (int)Math.Ceiling((position.Y + radius) / CellSize);
-            var xRange = Enumerable.Range(startX, endX - startX + 1);
-            var yRange = Enumerable.Range(startY, endY - startY + 1);
+            particleInSearchRadius.Clear();
+            int startPos_X = (int) Math.Floor((position.X - radius) / CellSize);
+            int endPos_X = (int) Math.Ceiling((position.X + radius) / CellSize);
+            int startPos_Y = (int) Math.Floor((position.Y - radius) / CellSize);
+            int endPos_Y = (int) Math.Ceiling((position.Y + radius) / CellSize);
+            var xRange = Enumerable.Range(startPos_X, endPos_X - startPos_X + 1);
+            var yRange = Enumerable.Range(startPos_Y, endPos_Y - startPos_Y + 1);
 
-            foreach (var x in xRange)
+            foreach (int x in xRange)
             {
-                foreach (var y in yRange)
+                foreach (int y in yRange)
                 {
                     var hash = new Vector2(x, y);
-                    if (!mSpatialGrids.ContainsKey(hash)) continue;
-                    var objectsInBucket = mSpatialGrids[hash];
+                    if (!SpatialGrid.ContainsKey(hash)) continue;
+                    var objectsInBucket = SpatialGrid[hash];
                     foreach (Particle particle in objectsInBucket)
                     {
                         var distance = Vector2.Distance(particle.Position, position);
                         if (distance > radius)
                             continue;
-                        particleInRadius.Add(particle);
+                        particleInSearchRadius.Add(particle);
                     }
                 }
             }

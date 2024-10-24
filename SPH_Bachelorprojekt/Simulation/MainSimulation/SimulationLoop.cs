@@ -96,11 +96,11 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                 SpatialHashing = new SpatialHashing(CellSize);
                 foreach (Particle particle in Particles)
                 {
-                    SpatialHashing.InsertObject(particle);
+                    SpatialHashing.AddParticle(particle);
                 }
                 foreach (Particle particle in Particles)
                 {
-                    SpatialHashing.InRadius(particle.Position, ParticleSizeH * 2f, ref particle.Neighbours);
+                    SpatialHashing.IsNeighbour(particle.Position, ParticleSizeH * 2f, ref particle.Neighbours);
                 }
             }
             else
@@ -266,26 +266,29 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             /// calculate Pressures of all particles
             ///
             // dislocate to other file
-            int min_Iterations = 3;
-            int max_Iterations = 20;
-            float max_error_Percentage = 0.01f; // given in %
+            int min_Iterations = 2;
+            int max_Iterations = 50;
+            float max_error_Percentage = 0.001f; // given in %
             // dislocate to other file
-            int currentIteration = 1;
+            int currentIteration = 0;
             float averageDensityError = float.PositiveInfinity;
-            bool continueWhile = true; 
+            bool continueWhile = true;
+            float percentageDensityError = float.PositiveInfinity;
 
-            
 
-            while ((continueWhile || (currentIteration <= min_Iterations)) && (currentIteration < max_Iterations))
+
+            while ((max_error_Percentage < percentageDensityError || (currentIteration <= min_Iterations)) && (currentIteration < max_Iterations))
             //while (currentIteration < 10)
             {
+                currentIteration++;
                 continueWhile = true;
                 averageDensityError = 0;
                 DoPressureSolveIteration(kernel, ref averageDensityError);
+                percentageDensityError = averageDensityError / Density;
                 float eta = max_error_Percentage * 0.01f * Density;
                 continueWhile = averageDensityError >= eta;
-                //Console.WriteLine("iter: " + currentIteration + ", err: " + averageDensityError + ", eta: " + eta);
-                currentIteration++;
+                Console.WriteLine("iter: " + currentIteration + ", err: " + percentageDensityError);
+                
             }
             Console.WriteLine("iterations needed: " + currentIteration);
         }
@@ -411,11 +414,11 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                 SpatialHashing = new SpatialHashing(CellSize);
                 foreach (Particle particle in Particles)
                 {
-                    SpatialHashing.InsertObject(particle);
+                    SpatialHashing.AddParticle(particle);
                 }
                 foreach (Particle particle in Particles)
                 {
-                    SpatialHashing.InRadius(particle.Position, ParticleSizeH * 2f, ref particle.Neighbours);
+                    SpatialHashing.IsNeighbour(particle.Position, ParticleSizeH * 2f, ref particle.Neighbours);
                 }
             }
             else
@@ -608,7 +611,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             {
                 foreach (Particle particle in Particles) 
                 {
-                    SpatialHashing.InRadius(particle.Position, ParticleSizeH * 2f, ref particle.Neighbours);
+                    SpatialHashing.IsNeighbour(particle.Position, ParticleSizeH * 2f, ref particle.Neighbours);
                 }
             }
             else
@@ -708,7 +711,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             foreach (Particle particle in Particles)
             {
                 //deleting hash particles
-                SpatialHashing.RemoveObject(particle);
+                SpatialHashing.RemoveParticle(particle);
                 if (particle.IsBoundaryParticle)
                 {
                     //continue;
@@ -721,7 +724,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                         MaxVelocity = particle.Velocity.Length();
                     }
                 }
-                SpatialHashing.InsertObject(particle);
+                SpatialHashing.AddParticle(particle);
             }
         }
 
