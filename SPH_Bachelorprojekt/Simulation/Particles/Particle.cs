@@ -50,7 +50,7 @@ namespace SPH_Bachelorprojekt.Simulation.Particles
             Mass = density * ParticleSizeH * ParticleSizeH;
             Neighbours = new List<Particle>();
             Pressure = 1f;
-            PredictedPressure = 0f;
+            PredictedPressure = 1f;
             SourceTerm = 0;
         }
 

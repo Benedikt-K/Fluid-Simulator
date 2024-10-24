@@ -276,9 +276,9 @@ namespace SPH_Bachelorprojekt.Utilities.ParticleUtils
             }
 
             // spawn fluid
-            for (int i = 7; i < 16; i++)
+            for (int i = 6; i < 16; i++)
             {
-                for (int j = 7; j < 18; j++)
+                for (int j = 6; j < 18; j++)
                 {
                     Particle particle1 = new Particle(new Vector2(i * ParticleSizeH + GetRandomValue(magitudeOfDeviation), j * ParticleSizeH + GetRandomValue(magitudeOfDeviation)), Density, ParticleSizeH, false);
                     particleList.Add(particle1);
