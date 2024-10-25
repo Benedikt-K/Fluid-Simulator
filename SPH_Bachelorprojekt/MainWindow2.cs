@@ -43,6 +43,7 @@ namespace SPH_Bachelorprojekt
             // what to use for simulation
             public bool UseIISPH = true;
             public bool UseNeighbour = true;
+            public SimulationLoop SimulationLoop;
 
             public void Run()
             {
@@ -104,7 +105,7 @@ namespace SPH_Bachelorprojekt
                 //IndexSort indexSortSolver = new IndexSort(particles, particleSizeH);
                 List<Particle> neighbours = new List<Particle>();
                 SimulationLoop simulationLoop = new SimulationLoop(particles, startDensity, particleSizeH, timeStep, viscosity, stiffness, gravity);
-
+                SimulationLoop = simulationLoop;
                 var circle = new SFML.Graphics.CircleShape((particleSizeH / 2f) * scaleFactorDrawing)
                 {
                     FillColor = SFML.Graphics.Color.White
@@ -121,7 +122,7 @@ namespace SPH_Bachelorprojekt
                     ////////////////////////
                     if (!IsPaused) 
                     {
-                        simulationLoop.UpdateAllParticles(smoothingLength, UseIISPH, UseNeighbour);
+                        SimulationLoop.UpdateAllParticles(smoothingLength, UseIISPH, UseNeighbour);
                     }
                     //Console.WriteLine(particles.Count);
                     ///////////////////////
@@ -129,15 +130,22 @@ namespace SPH_Bachelorprojekt
                     ///////////////////////
                     // Clear Previous frame
                     window.Clear();
-                    MaxPressure = simulationLoop.MaxCurrentParticlePressure;
+                    MaxPressure = SimulationLoop.MaxCurrentParticlePressure;
                     //Console.WriteLine("Particle Count: " + simulationLoop.Particles.Count);
-                    foreach (var particle in simulationLoop.Particles)
+                    foreach (var particle in SimulationLoop.Particles)
                     {
                         SFML.System.Vector2f transformedPosition = new SFML.System.Vector2f((particle.Position.X - particleSizeH / 2) * scaleFactorDrawing, videoY - (particle.Position.Y - particleSizeH / 2) * scaleFactorDrawing);
                         circle.Position = new SFML.System.Vector2f(transformedPosition.X, transformedPosition.Y);
                         if (particle.IsBoundaryParticle)
                         {
-                            circle.FillColor = SFML.Graphics.Color.White;
+                            if (!particle.IsRemoveable)
+                            {
+                                circle.FillColor = SFML.Graphics.Color.White;
+                            }
+                            else
+                            {
+                                circle.FillColor = SFML.Graphics.Color.Green;
+                            }                            
                         }
                         else
                         {
@@ -148,7 +156,7 @@ namespace SPH_Bachelorprojekt
                             if (VelocityColors)
                             {
                                 // Color for velocity
-                                float lambdaParticle = simulationLoop.CalculateParticleLambdaCFL(particle.Velocity * 3);
+                                float lambdaParticle = SimulationLoop.CalculateParticleLambdaCFL(particle.Velocity * 3);
                                 circle.FillColor = GetColor(lambdaParticle);
                             }
                             else if (PressureColors) 
@@ -262,6 +270,18 @@ namespace SPH_Bachelorprojekt
                     texture.Update(window);
                     texture.CopyToImage().SaveToFile("screenshot" + numberOfScreenshots + ".png");
                     Console.WriteLine("Saving succsessful");
+                }
+                if (e.Code == SFML.Window.Keyboard.Key.X)
+                {
+                    List<Particle> newP = new List<Particle>();
+                    foreach (Particle particle in SimulationLoop.Particles)
+                    {
+                        if (!particle.IsRemoveable)
+                        {
+                            newP.Add(particle);
+                        }
+                    }
+                    SimulationLoop.Particles = newP;
                 }
             }
 

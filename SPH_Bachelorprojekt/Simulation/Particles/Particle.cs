@@ -25,12 +25,13 @@ namespace SPH_Bachelorprojekt.Simulation.Particles
         public float Mass;
         public float ParticleSizeH;
         public bool IsBoundaryParticle;
+        public bool IsRemoveable;
         public List<Particle> Neighbours;
         public float Pressure;
         public float PredictedPressure;
         public float SourceTerm;
 
-        public Particle(Vector2 position, float density, float particleSizeH, bool boundaryParticle=false)
+        public Particle(Vector2 position, float density, float particleSizeH, bool boundaryParticle=false, bool isRemoveable=false)
         {
             Position = position;
             PositionNew = position;
@@ -46,6 +47,7 @@ namespace SPH_Bachelorprojekt.Simulation.Particles
             LastDensity = density;
             ParticleSizeH = particleSizeH;
             IsBoundaryParticle = boundaryParticle;
+            IsRemoveable = isRemoveable;
             // initialize mass
             Mass = density * ParticleSizeH * ParticleSizeH;
             Neighbours = new List<Particle>();

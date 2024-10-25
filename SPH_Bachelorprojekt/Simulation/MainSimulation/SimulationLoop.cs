@@ -137,7 +137,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             /// calculate Pressures of all particles
             ///
             int min_Iterations = 10;
-            int max_Iterations = 1000;
+            int max_Iterations = 100;
             float max_error_Percentage = 1f; // given in %
             // dislocate to other file
             int currentIteration = 0;

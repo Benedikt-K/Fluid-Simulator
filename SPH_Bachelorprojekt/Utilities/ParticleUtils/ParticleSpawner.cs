@@ -356,9 +356,12 @@ namespace SPH_Bachelorprojekt.Utilities.ParticleUtils
             List<Particle> particleList = new List<Particle>();
             float magitudeOfDeviation = 0f;
 
-            // Spawn boundarys
             int maxI = 125;
             int maxJ = 85;
+
+            int fluidStart = maxI / 3;
+
+            // Spawn boundarys
             for (int i = 6; i < maxI; i += 1)
             {
                 for (int j = 6; j < maxJ; j += 1)
@@ -371,8 +374,17 @@ namespace SPH_Bachelorprojekt.Utilities.ParticleUtils
                 }
             }
 
+            // spawn removeable boundary
+            for (int j = 7; j < maxJ; j += 1)
+            {
+                Particle particle = new Particle(new Vector2(fluidStart * ParticleSizeH, j * ParticleSizeH), Density, ParticleSizeH, true, true);
+                particleList.Add(particle);
+                
+            }
+            
+
             // spawn fluid
-            for (int i = 7; i < maxI / 3; i++)
+            for (int i = 7; i < fluidStart; i++)
             {
                 for (int j = 7; j < maxJ / 1.5; j++)
                 {
