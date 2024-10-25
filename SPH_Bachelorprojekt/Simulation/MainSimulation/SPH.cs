@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SPH_Bachelorprojekt.Simulation.Particles;
 using SPH_Bachelorprojekt.Simulation.Kernel_Function;
+using SPH_Bachelorprojekt.Simulation.Neighbours;
 using System.Numerics;
 
 namespace SPH_Bachelorprojekt.Simulation.MainSimulation
@@ -14,21 +15,62 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
     /// </summary>
     class SPH
     {
-        public float CalculateDensityAtParticle(Particle particle, List<Particle> neighbours, Kernel kernel)
+        public static void NeighbourhoodSearch(ref List<Particle> Particles, float ParticleSizeH, bool useNeighbour)
+        {
+            if (useNeighbour)
+            {
+                int CellSize = (int)ParticleSizeH * 2; /// Particle Size should be int here
+                SpatialHashing spatialHashing = new SpatialHashing(CellSize);
+                foreach (Particle particle in Particles)
+                {
+                    spatialHashing.AddParticle(particle);
+                }
+                foreach (Particle particle in Particles)
+                {
+                    spatialHashing.GetNeighbours(particle.Position, ParticleSizeH * 2f, ref particle.Neighbours);
+                }
+            }
+            else
+            {
+                Quadratic quadraticSolver = new Quadratic(Particles, ParticleSizeH);
+                Parallel.ForEach(Particles, particle =>
+                {
+                    //Quadratic neighbour
+                    List<Particle> neighbours = quadraticSolver.GetNeighboursQuadratic(particle);
+
+                    // null reference check
+                    if (neighbours != null)
+                    {
+                        particle.Neighbours = neighbours;
+                        if (!particle.IsBoundaryParticle)
+                        {
+                            //Console.WriteLine("Neighbours Count: " + particle.Neighbours.Count);
+                        }
+                    }
+                    else
+                    {
+                        particle.Neighbours = new List<Particle>();
+                    }
+
+                });
+            }
+        }
+
+        public static float CalculateDensityAtParticle(Particle particle, Kernel kernel)
         {
             float density = 0f;
             if (particle.Neighbours.Count <= 1)
             {
                 return 0f;
             }
-            foreach (Particle neighbour in neighbours)
+            foreach (Particle neighbour in particle.Neighbours)
             {
                 density += neighbour.Mass * kernel.W(Vector2.Distance(particle.Position, neighbour.Position));
             }
             return density;
         }
 
-        public Vector2 CalculateViscosityAcceleration(Particle particle, List<Particle> neighbours, float ParticleSizeH, float viscosity, Kernel kernel)
+        public static Vector2 CalculateViscosityAcceleration(Particle particle, List<Particle> neighbours, float ParticleSizeH, float viscosity, Kernel kernel)
         {
             Vector2 viscostiyAcc = Vector2.Zero;
             foreach (Particle neighbour in particle.Neighbours)
@@ -48,7 +90,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             return viscostiyAcc;
         }
 
-        public Vector2 CalculateSurfaceTensionAcceleration(Particle particle, List<Particle> neighbours, Kernel kernel)
+        public static Vector2 CalculateSurfaceTensionAcceleration(Particle particle, List<Particle> neighbours, Kernel kernel)
         {
             // Have the feeling that it doesnt work properly
             Vector2 surfaceTensionAcc = Vector2.Zero;
@@ -61,10 +103,15 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             return surfaceTensionAcc;
         }
 
-        public float CalculateParticleLambdaCFL(Vector2 velocity, float ParticleSizeH, float TimeStep)
+        public static float CalculateParticleLambdaCFL(Vector2 velocity, float ParticleSizeH, float TimeStep)
         {
             float lambda = (TimeStep * velocity.Length()) / ParticleSizeH;
             return lambda;
+        }
+
+        public static Vector2 GetGravity(float gravity)
+        {
+            return new Vector2(0, gravity);
         }
     }
 }

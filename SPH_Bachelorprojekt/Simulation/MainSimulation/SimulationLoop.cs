@@ -86,174 +86,45 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
 
         public void UpdateAllParticles_IISPH(float smoothingLength, bool useNeighbour)
         {
-            //neighbour
-            float restDensity = Density;
-            float gravity = Gravity;
-            /// Neighbour search
-            if (useNeighbour)
-            {
-                int CellSize = (int)ParticleSizeH * 2; /// Particle Size should be int here
-                SpatialHashing = new SpatialHashing(CellSize);
-                foreach (Particle particle in Particles)
-                {
-                    SpatialHashing.AddParticle(particle);
-                }
-                foreach (Particle particle in Particles)
-                {
-                    SpatialHashing.GetNeighbours(particle.Position, ParticleSizeH * 2f, ref particle.Neighbours);
-                }
-            }
-            else
-            {
-                Quadratic quadraticSolver = new Quadratic(Particles, ParticleSizeH);
-                Parallel.ForEach(Particles, particle =>
-                {
-                    //Quadratic neighbour
-                    List<Particle> neighbours = quadraticSolver.GetNeighboursQuadratic(particle);
-
-                    // null reference check
-                    if (neighbours != null)
-                    {
-                        particle.Neighbours = neighbours;
-                        if (!particle.IsBoundaryParticle)
-                        {
-                            //Console.WriteLine("Neighbours Count: " + particle.Neighbours.Count);
-                        }
-                    }
-                    else
-                    {
-                        particle.Neighbours = new List<Particle>();
-                    }
-
-                });
-            }
-
+            SPH.NeighbourhoodSearch(ref Particles, ParticleSizeH, useNeighbour);
 
             // Implementation based on "Algorithm 1" from "https://cg.informatik.uni-freiburg.de/publications/2013_TVCG_IISPH.pdf"
             Kernel kernel = new Kernel(smoothingLength);
-            PredictAdvectionNew(kernel);
+            PredictAdvection(kernel);
+
+            // variables for pressure solving
+            int min_Iterations = 200;
+            int max_Iterations = 500;
+            float max_error_Percentage = 0.001f;
+            //IISPH.PressureSolve(ref Particles, min_Iterations, max_Iterations, max_error_Percentage, Density, Gamma, kernel);
             PressureSolve(kernel);
             UpdateIISPH(kernel);
         }
 
         
-        public void PredictAdvectionNew(Kernel kernel)
+        public void PredictAdvection(Kernel kernel)
         {
-            ///
-            /// for all particles:
-            /// Calculate diagonal term D_i_i, nonpressure-Forces and predicted Velocity
-            /// use to calculate A_i_i
-            ///
             Parallel.ForEach(Particles, particle =>
             {
                 if (!particle.IsBoundaryParticle)
                 {
                     particle.LastDensity = particle.Density;
-
-                    //predict adv_velocity and get new Density
-                    float density = 0.0f;
-                    foreach (Particle neighbour in particle.Neighbours)
-                    {
-                        density += neighbour.Mass * kernel.W(Vector2.Distance(particle.Position, neighbour.Position));
-                    }
-
+                    particle.Density = SPH.CalculateDensityAtParticle(particle,  kernel);
                     Vector2 nonPressureAcceleration = CalculateViscosityAcceleration(particle, particle.Neighbours, kernel) + GetGravity(); ///add surface tension
-                    particle.NonPressureForces = nonPressureAcceleration;
-                    particle.PredictedVelocity = particle.Velocity + TimeStep * nonPressureAcceleration; //calculate predicted velocity
-                    //Console.WriteLine("predictedVel: " + particle.PredictedVelocity + "nonP_Acc: " + nonPressureAcceleration);
-                    particle.LastDensity = particle.Density;
-                    particle.Density = density;
+                    particle.NonPressureAcceleration = nonPressureAcceleration;
+                    particle.PredictedVelocity = particle.Velocity + TimeStep * nonPressureAcceleration;
                 }
             });
 
 
-
             Parallel.ForEach(Particles, particle =>
             {
                 if (!particle.IsBoundaryParticle)
 
                 {
-
-                    // compute source term (predicted density Error)
-                    float predictedDensityError = Density - particle.Density;
-                    foreach (Particle neighbour in particle.Neighbours)
-                    {
-                        if (neighbour.IsBoundaryParticle)
-                        {
-                            //boundary particles
-                            float dotProduct = Vector2.Dot(particle.PredictedVelocity - neighbour.PredictedVelocity * (ElapsedTime + TimeStep), kernel.GradW(particle.Position, neighbour.Position));
-                            predictedDensityError -= TimeStep * neighbour.Mass * dotProduct;
-                        }
-                        else
-                        {
-                            /// FLUID particles
-                            float dotProduct = Vector2.Dot(particle.PredictedVelocity - neighbour.PredictedVelocity, kernel.GradW(particle.Position, neighbour.Position));
-                            predictedDensityError -= TimeStep * neighbour.Mass * dotProduct;
-                        }
-                    }
-                    particle.SourceTerm = predictedDensityError;
-
-                    // calculate diagonal element 
-                    float diagonalTerm = 0;
-                    foreach (Particle neighbour in particle.Neighbours)
-                    {
-                        float particleLastDensity2 = particle.LastDensity * particle.LastDensity;
-                        if (neighbour.IsBoundaryParticle)
-                        {
-                            // BOUNDARY N
-                            Vector2 innerTerm = Vector2.Zero;
-                            foreach (Particle neighbourInner in particle.Neighbours)
-                            {
-                                if (neighbourInner.IsBoundaryParticle)
-                                {
-                                    // boundary NN
-                                    innerTerm -= 2 * Gamma * neighbourInner.Mass / particleLastDensity2 * kernel.GradW(particle.Position, neighbourInner.Position);
-                                }
-                                else
-                                {
-                                    // fluid NN
-                                    innerTerm -= neighbourInner.Mass / particleLastDensity2 * kernel.GradW(particle.Position, neighbourInner.Position);
-                                }
-                            }
-                            float dotProduct = Vector2.Dot(innerTerm, kernel.GradW(particle.Position, neighbour.Position));
-                            diagonalTerm += neighbour.Mass * dotProduct;
-                        }
-                        else
-                        {
-                            // FLUID N
-                            Vector2 innerTerm = Vector2.Zero;
-                            foreach (Particle neighbourInner in particle.Neighbours)
-                            {
-                                if (neighbourInner.IsBoundaryParticle)
-                                {
-                                    // boundary NN
-                                    innerTerm -= 2 * Gamma * neighbourInner.Mass / particleLastDensity2 * kernel.GradW(particle.Position, neighbourInner.Position);
-                                }
-                                else
-                                {
-                                    // fluid NN
-                                    innerTerm -= neighbourInner.Mass / particleLastDensity2 * kernel.GradW(particle.Position, neighbourInner.Position);
-                                }
-                            }
-                            float dotProduct = Vector2.Dot(innerTerm, kernel.GradW(particle.Position, neighbour.Position));
-                            diagonalTerm += neighbour.Mass * dotProduct;
-
-                            //second fluid N term
-                            Vector2 otherInnerTerm = Vector2.Zero;
-                            otherInnerTerm = (particle.Mass / particleLastDensity2) * kernel.GradW(neighbour.Position, particle.Position);
-                            float otherdotProduct = Vector2.Dot(otherInnerTerm, kernel.GradW(particle.Position, neighbour.Position));
-                            diagonalTerm += neighbour.Mass * otherdotProduct;
-                        }
-                    }
-
-                    diagonalTerm *= TimeStep * TimeStep;
-                    particle.DiagonalElement = diagonalTerm;
-                    //particle.PredictedPressure = 0;
-
-                    if (particle.DiagonalElement != 0)
-                    {
-                        //Console.WriteLine("not 0 dii: " + particle.DiagonalElement);
-                    }
+                    particle.SourceTerm = IISPH.GetSourceTerm(particle, ParticleSizeH, TimeStep, ElapsedTime, Density, kernel);
+                    particle.DiagonalElement = IISPH.GetDiagonalElement(particle, ParticleSizeH, TimeStep, Gamma, kernel);
+                    particle.PredictedPressure = 0;
                 }
             });
         }
@@ -265,7 +136,6 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             ///
             /// calculate Pressures of all particles
             ///
-            // dislocate to other file
             int min_Iterations = 200;
             int max_Iterations = 500;
             float max_error_Percentage = 0.001f; // given in %
@@ -549,26 +419,6 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                 }
                 //SpatialHashing.InsertObject(particle);
             }
-                        /*Parallel.ForEach(Particles, particle =>
-            {
-                if (particle.IsBoundaryParticle)
-                {
-                    //continue;
-                }
-                else
-                {
-                    UpdateParticle(particle, particle.Neighbours, kernel);
-                    if (particle.Velocity.Length() > MaxVelocity)
-                    {
-                        MaxVelocity = particle.Velocity.Length();
-                    }
-                }
-            });*/
-            //CalculateNewTimeStep();
-            // Transfer updated particles and reset 
-            //Particles = ParticlesUpdated;
-            //ParticlesUpdated = new List<Particle>();
-
         }
 
         public void UpdateAllParticlesSPHNotParallel(float smoothingLength, bool useNeighbour)
@@ -802,111 +652,6 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
         {
             float lambda = (TimeStep * velocity.Length()) / ParticleSizeH;
             return lambda;
-        }
-
-        public void PredictAdvectionOLD(Kernel kernel)
-        {
-            ///
-            /// for all particles:
-            /// Calculate diagonal term D_i_i, nonpressure-Forces and predicted Velocity
-            /// use to calculate A_i_i
-            ///
-            foreach (Particle particle in Particles)
-            {
-                //predict adv_velocity
-                float density = 0.0f;
-                foreach (Particle neighbour in particle.Neighbours)
-                {
-                    density += neighbour.Mass * kernel.W(Vector2.Distance(particle.Position, neighbour.Position));
-                }
-                Vector2 nonPressureAcceleration = CalculateViscosityAcceleration(particle, particle.Neighbours, kernel) + GetGravity(); ///add surface tension
-                particle.NonPressureForces = nonPressureAcceleration;
-                particle.PredictedVelocity = particle.Velocity + TimeStep * nonPressureAcceleration; //calculate predicted velocity
-
-                // correct source term
-
-
-                // calculate d_i_i
-                Vector2 diagonalTerm = Vector2.Zero;
-                float densityCoefficient = particle.Density / Density;
-                float densityCoefficient2 = densityCoefficient * densityCoefficient;
-                //Console.WriteLine("dens_Coeff: " + densityCoefficient);
-                foreach (Particle neighbour in particle.Neighbours)
-                {
-                    if (neighbour.IsBoundaryParticle)
-                    {
-                        /// BOUNDARY particles -- Akinci2012
-                        float neighbourVolume = neighbour.GetVolume();
-                        //Console.WriteLine("N_volume: " + neighbourVolume);
-                        diagonalTerm -= (neighbourVolume / densityCoefficient2) * kernel.GradW(particle.Position, neighbour.Position);
-                    }
-                    else
-                    {
-                        /// FLUID particles
-                        float neighbourVolume = neighbour.Mass / neighbour.Density;
-                        diagonalTerm -= (neighbourVolume / densityCoefficient2) * kernel.GradW(particle.Position, neighbour.Position);
-                    }
-                }
-                //diagonalTerm *= TimeStep * TimeStep;
-                /*particle.DiagonalElement = diagonalTerm;
-                if (particle.DiagonalElement != Vector2.Zero)
-                {
-                    //Console.WriteLine("not 0 dii: " + particle.D_i_i);
-                }*/
-            }
-
-            foreach (Particle particle in Particles)
-            {
-                //density = denisty / density0 ?
-                // compute rho_adv
-                float predictedDensity = particle.Density;
-                foreach (Particle neighbour in particle.Neighbours)
-                {
-                    if (neighbour.IsBoundaryParticle)
-                    {
-                        /// BOUNDARY particles -- Akinci2012
-                        //Vector2 velocityAdvection = (particle.Velocity + TimeStep * (particle.NonPressureForces / particle.Mass));
-                        float neighbourVolume = neighbour.Mass / neighbour.Density;
-                        float dotProduct = Vector2.Dot(particle.PredictedVelocity - neighbour.PredictedVelocity, kernel.GradW(particle.Position, neighbour.Position));
-                        predictedDensity += TimeStep * neighbourVolume * dotProduct;
-                    }
-                    else
-                    {
-                        /// FLUID particles
-                        //Vector2 velocityAdvection = (particle.Velocity + TimeStep * (particle.NonPressureForces / particle.Mass));
-                        float neighbourVolume = neighbour.Mass / neighbour.Density;
-                        float dotProduct = Vector2.Dot(particle.PredictedVelocity - neighbour.PredictedVelocity, kernel.GradW(particle.Position, neighbour.Position));
-                        predictedDensity += TimeStep * neighbourVolume * dotProduct;
-                    }
-                }
-
-                /// calculate a_i_i
-                //particle.PredictedPressure = 0.5f * particle.Pressure * (ElapsedTime - TimeStep);
-                particle.PredictedPressure = 0.5f * particle.Pressure;
-                float a_i_i = 0.0f;
-                float densityCoefficient = particle.Density / Density;
-                float densityCoefficient2 = densityCoefficient * densityCoefficient;
-                float particleVolume = particle.Mass / particle.Density;
-                float dpi = particleVolume / densityCoefficient2;
-
-                foreach (Particle neighbour in particle.Neighbours)
-                {
-                    float neighbourVolume = neighbour.Mass / neighbour.Density;
-                    if (neighbour.IsBoundaryParticle)
-                    {
-                        Vector2 d_j_i = dpi * kernel.GradW(particle.Position, neighbour.Position);
-                        //a_i_i += neighbourVolume * Vector2.Dot((particle.DiagonalElement - d_j_i), kernel.GradW(particle.Position, neighbour.Position));
-                    }
-                    else
-                    {
-                        Vector2 d_j_i = dpi * kernel.GradW(particle.Position, neighbour.Position);
-                        //a_i_i += neighbour.Mass * Vector2.Dot((particle.DiagonalElement - d_j_i), kernel.GradW(particle.Position, neighbour.Position));
-                        //Vector2 d_i_j = ((TimeStep * TimeStep) / Density) * neighbour.Mass * kernel.GradW(particle.Position, neighbour.Position);
-                        //a_i_i += neighbour.Mass * (particle.D_i_i - d_i_j) * kernel.GradW(particle.Position, neighbour.Position);
-                    }
-                }
-                particle.A_i_i = a_i_i;
-            }
         }
     }
 }
