@@ -654,5 +654,11 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             float lambda = (TimeStep * velocity.Length()) / ParticleSizeH;
             return lambda;
         }
+
+        public float CalculateParticleLambdaCFL(float velocityLength)
+        {
+            float lambda = (TimeStep * velocityLength) / ParticleSizeH;
+            return lambda;
+        }
     }
 }

@@ -50,7 +50,7 @@ namespace SPH_Bachelorprojekt
                 // INITIALIZE IMPORTANT VARIABLES
                 float particleSizeH = 5f;                           // works with 8
                 float viscosity = 20f;                              // works with 10
-                float timeStep = 0.1f;                              // works with 0.2
+                float timeStep = 0.2f;                              // works with 0.2
                 float startDensity = 0.3f;                          // works with 0.3
                 float gravity = -0.8f;                              // works with -0.4
                 //float smoothingLength = 2 * particleSizeH;
@@ -118,20 +118,28 @@ namespace SPH_Bachelorprojekt
                     // Process events
                     window.DispatchEvents();
                     ////////////////////////
+                    //UPDATE TimeStep
+                    ////////////////////////
+                    if (SimulationLoop.CalculateParticleLambdaCFL(SimulationLoop.MaxVelocity) > 0.8f)
+                    {
+                        timeStep *= 0.7f;
+                    }
+                    else if (SimulationLoop.CalculateParticleLambdaCFL(SimulationLoop.MaxVelocity) > 0.2f)
+                    {
+                        timeStep *= 1.5f;
+                    }
+                    ////////////////////////
                     //UPDATE PARTICLES
                     ////////////////////////
                     if (!IsPaused) 
                     {
                         SimulationLoop.UpdateAllParticles(smoothingLength, UseIISPH, UseNeighbour);
                     }
-                    //Console.WriteLine(particles.Count);
                     ///////////////////////
                     //DRAW PARTICLES
                     ///////////////////////
-                    // Clear Previous frame
                     window.Clear();
                     MaxPressure = SimulationLoop.MaxCurrentParticlePressure;
-                    //Console.WriteLine("Particle Count: " + simulationLoop.Particles.Count);
                     foreach (var particle in SimulationLoop.Particles)
                     {
                         SFML.System.Vector2f transformedPosition = new SFML.System.Vector2f((particle.Position.X - particleSizeH / 2) * scaleFactorDrawing, videoY - (particle.Position.Y - particleSizeH / 2) * scaleFactorDrawing);
@@ -149,9 +157,6 @@ namespace SPH_Bachelorprojekt
                         }
                         else
                         {
-                            // normal
-                            //circle.FillColor = SFML.Graphics.Color.Blue;
-
                             // color coded
                             if (VelocityColors)
                             {
