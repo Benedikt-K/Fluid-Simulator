@@ -46,7 +46,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             Stiffness = stiffness;
             minDensity = density * 0.01f;
             Gravity = gravity;
-            Omega = 0.5f;
+            Omega = 0.8f;
             Gamma = 0.7f;
             //minDensity = 0f;
             int fluidCount = 0;
@@ -136,9 +136,9 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             ///
             /// calculate Pressures of all particles
             ///
-            int min_Iterations = 200;
-            int max_Iterations = 500;
-            float max_error_Percentage = 0.001f; // given in %
+            int min_Iterations = 3;
+            int max_Iterations = 1000;
+            float max_error_Percentage = 1.5f; // given in %
             // dislocate to other file
             int currentIteration = 0;
             float averageDensityError = float.PositiveInfinity;
@@ -147,15 +147,14 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
 
 
             while ((continueWhile || (currentIteration < min_Iterations)) && (currentIteration < max_Iterations))
-            //while (currentIteration < 10)
             {
                 currentIteration++;
                 averageDensityError = 0;
                 DoPressureSolveIteration(kernel, ref averageDensityError);
-                percentageDensityError = averageDensityError / Density;
-                float eta = max_error_Percentage * 0.01f * Density;
-                continueWhile = averageDensityError >= eta;
-                //Console.WriteLine("iter: " + currentIteration + ", err: " + averageDensityError);
+                percentageDensityError = (averageDensityError - Density) / Density;
+                float eta = max_error_Percentage;
+                continueWhile = Math.Abs(percentageDensityError) >= eta;
+                Console.WriteLine("iter: " + currentIteration + ", err: " + percentageDensityError);
                 
             }
             if (currentIteration != 3)

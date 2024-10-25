@@ -87,7 +87,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                 }
                 else
                 {
-                    /// FLUID particles
+                    // FLUID particles
                     float dotProduct = Vector2.Dot(particle.PredictedVelocity - neighbour.PredictedVelocity, kernel.GradW(particle.Position, neighbour.Position));
                     predictedDensityError -= TimeStep * neighbour.Mass * dotProduct;
                 }
@@ -151,7 +151,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                 percentageDensityError = averageDensityError / Density;
                 float eta = max_error_Percentage * 0.01f * Density;
                 continueWhile = averageDensityError >= eta;
-                Console.WriteLine("iter: " + currentIteration + ", err: " + percentageDensityError);
+                Console.WriteLine("iter: " + currentIteration + ", err: " + averageDensityError);
 
             }
             Console.WriteLine("iterations needed: " + currentIteration);
