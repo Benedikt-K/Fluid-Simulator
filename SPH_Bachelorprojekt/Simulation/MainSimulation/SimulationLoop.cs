@@ -46,7 +46,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             Stiffness = stiffness;
             minDensity = density * 0.01f;
             Gravity = gravity;
-            Omega = 0.8f;
+            Omega = 0.5f;
             Gamma = 0.7f;
             //minDensity = 0f;
             int fluidCount = 0;
@@ -136,9 +136,9 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             ///
             /// calculate Pressures of all particles
             ///
-            int min_Iterations = 3;
+            int min_Iterations = 10;
             int max_Iterations = 1000;
-            float max_error_Percentage = 1.5f; // given in %
+            float max_error_Percentage = 1f; // given in %
             // dislocate to other file
             int currentIteration = 0;
             float averageDensityError = float.PositiveInfinity;
@@ -152,9 +152,10 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                 averageDensityError = 0;
                 DoPressureSolveIteration(kernel, ref averageDensityError);
                 percentageDensityError = (averageDensityError - Density) / Density;
-                float eta = max_error_Percentage;
-                continueWhile = Math.Abs(percentageDensityError) >= eta;
-                Console.WriteLine("iter: " + currentIteration + ", err: " + percentageDensityError);
+                
+                float eta = max_error_Percentage * 0.01f * Density;
+                continueWhile = Math.Abs(averageDensityError) >= eta;
+                //Console.WriteLine("iter: " + currentIteration + ", err: " + Math.Abs(averageDensityError) + "eta: " + eta);
                 
             }
             if (currentIteration != 3)
@@ -218,8 +219,9 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                     //particle.Pressure = particle.PredictedPressure;
                     float innerTerm = particle.PredictedPressure + omega * ((particle.SourceTerm - Ap) / particle.DiagonalElement);
                     particle.PredictedPressure = Math.Max(innerTerm, 0);
+                        //particle.Pressure = particle.PredictedPressure;
                 }
-                averageDensityError += Ap - particle.SourceTerm;
+                averageDensityError -= Ap - particle.SourceTerm;
             }
             averageDensityError /= FluidParticleCount;
 
