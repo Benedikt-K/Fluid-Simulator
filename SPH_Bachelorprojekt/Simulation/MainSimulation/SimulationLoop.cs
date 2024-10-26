@@ -70,11 +70,11 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             Viscosity = viscosity;
         }
 
-        public void UpdateAllParticles(float smoothingLength, bool useIISPH, bool useNeighbour)
+        public void UpdateAllParticles(float smoothingLength, bool useIISPH, bool useNeighbour, ref List<float> densityErrorData, ref List<float> iterationData)
         {
             if (useIISPH)
             {
-                UpdateAllParticles_IISPH(smoothingLength, useNeighbour);
+                UpdateAllParticles_IISPH(smoothingLength, useNeighbour, ref densityErrorData, ref iterationData);
             }
             else
             {
@@ -84,7 +84,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
         }
 
 
-        public void UpdateAllParticles_IISPH(float smoothingLength, bool useNeighbour)
+        public void UpdateAllParticles_IISPH(float smoothingLength, bool useNeighbour, ref List<float> densityErrorData, ref List<float> iterationData)
         {
             SPH.NeighbourhoodSearch(ref Particles, ParticleSizeH, useNeighbour);
 
@@ -97,7 +97,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             int max_Iterations = 500;
             float max_error_Percentage = 0.1f;
             //IISPH.PressureSolve(ref Particles, min_Iterations, max_Iterations, max_error_Percentage, Density, Gamma, kernel);
-            PressureSolve(kernel);
+            PressureSolve(kernel, ref densityErrorData, ref iterationData);
             UpdateIISPH(kernel);
         }
 
@@ -130,7 +130,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
 
         
 
-        public void PressureSolve(Kernel kernel)
+        public void PressureSolve(Kernel kernel, ref List<float> densityErrorData, ref List<float> iterationData)
         {
             ///
             /// calculate Pressures of all particles
@@ -147,15 +147,18 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
 
             while ((continueWhile || (currentIteration < min_Iterations)) && (currentIteration < max_Iterations))
             {
-                currentIteration++;
                 averageDensityError = 0;
                 DoPressureSolveIteration(kernel, ref averageDensityError);
                 percentageDensityError = (averageDensityError - Density) / Density;
-                
                 float eta = max_error_Percentage * 0.01f * Density;
                 float test = 0.02f;
-                continueWhile = Math.Abs(averageDensityError) >= test;
-                Console.WriteLine("iter: " + currentIteration + ", err: " + Math.Abs(averageDensityError) + "eta: " + eta);
+                float absoluteAverageDensityError = Math.Abs(averageDensityError);
+                continueWhile = absoluteAverageDensityError >= test;
+                Console.WriteLine("iter: " + currentIteration + ", err: " + absoluteAverageDensityError + "eta: " + eta);
+                // add data for graph
+                densityErrorData.Add(absoluteAverageDensityError);
+                iterationData.Add(currentIteration);
+                currentIteration++;
             }
             if (currentIteration != min_Iterations)
             {

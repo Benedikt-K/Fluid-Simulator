@@ -23,12 +23,6 @@ namespace SPH_Bachelorprojekt
         }
         class SimpleWindow
         {
-            public ScottPlot.Plot plot = new ScottPlot.Plot();
-            List<float> dataX = new List<float>();
-            List<float> dataY = new List<float>();
-            public bool StartDensityErrorCollection = false;
-            public bool StartDensityErrorAndIterationCollection = false;
-            public int numberOfScreenshots = 0;
             public float StartingDensity;
             public float CurrentTimeStep = 0;
             public bool IsPaused = false;
@@ -37,11 +31,22 @@ namespace SPH_Bachelorprojekt
             public float Viscosity;
             public float Stiffness;
             public SimulationLoop SimulationLoop;
+            // save screenshot on button
+            public int numberOfScreenshots = 0;
+            // plotting 
+            public int ErrorCollectionPlotCount = 0;
+            public ScottPlot.Plot plot = new ScottPlot.Plot();
+            List<float> dataX = new List<float>();
+            List<float> dataY = new List<float>();
+            List<float> DensityIterationErrorDataX = new List<float>();
+            List<float> DensityIterationErrorDataY = new List<float>();
+            public bool StartDensityErrorCollection = false;
+            public bool StartDensityErrorAndIterationCollection = false;
             // what is used for colors
             private readonly bool VelocityColors = true;
             private readonly bool PressureColors = false;
             private readonly bool DensityColors = false;
-            // save images to folder ?
+            // save Stimestep screen to folder ?
             public int NumerOfTimeStep = 0;
             public string CurrentDate = DateTime.Now.ToString("dd-MM-yyyy-HH-mm");
             public bool SaveSimulationToImages = false;
@@ -144,7 +149,7 @@ namespace SPH_Bachelorprojekt
                     ////////////////////////
                     if (!IsPaused) 
                     {
-                        SimulationLoop.UpdateAllParticles(smoothingLength, UseIISPH, UseNeighbour);
+                        SimulationLoop.UpdateAllParticles(smoothingLength, UseIISPH, UseNeighbour, ref DensityIterationErrorDataX, ref DensityIterationErrorDataY);
                     }
                     ///////////////////////
                     //DRAW PARTICLES
@@ -304,6 +309,11 @@ namespace SPH_Bachelorprojekt
                         }
                     }
                     SimulationLoop.Particles = newP;
+                }
+                if (e.Code == SFML.Window.Keyboard.Key.C)
+                {
+                    StartDensityErrorAndIterationCollection = true;
+                    ErrorCollectionPlotCount++;
                 }
             }
 
