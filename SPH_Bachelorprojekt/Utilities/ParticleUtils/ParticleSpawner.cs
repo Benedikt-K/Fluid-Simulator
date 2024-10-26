@@ -517,25 +517,26 @@ namespace SPH_Bachelorprojekt.Utilities.ParticleUtils
             return particleList;
         }
 
-        public List<Particle> FluidColumOneLayerBoundary(int height, int width)
+        public List<Particle> FluidColumOneLayerBoundary(int width, int height)
         {
             List<Particle> particleList = new List<Particle>();
 
             // Spawn boundarys
-            for (int i = 6; i < height; i += 1)
+            for (int i = 6; i < width; i += 1)
             {
-                for (int j = 6; j < width; j += 1)
+                for (int j = 6; j < height; j += 1)
                 {
-                    if (i < 7 || i > height - 2 || j < 7 || j > width - 2)
+                    if (i < 7 || i > width - 2 || j < 7 || j > height - 2)
                     {
                         Particle particle = new Particle(new Vector2(i * ParticleSizeH, j * ParticleSizeH), Density, ParticleSizeH, true);
                         particleList.Add(particle);
                     }
                 }
             }
-            for (int i = 7; i < height - 1; i++)
+            // spawn fluid
+            for (int i = 7; i < width - 1; i++)
             {
-                for (int j = 7; j < width - 5; j++)
+                for (int j = 7; j < height - 5; j++)
                 {
                     Particle particle1 = new Particle(new Vector2(i * ParticleSizeH, j * ParticleSizeH), Density, ParticleSizeH, false);
                     particleList.Add(particle1);
