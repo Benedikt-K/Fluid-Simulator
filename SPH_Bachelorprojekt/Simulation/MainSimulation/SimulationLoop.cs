@@ -117,7 +117,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             });
 
 
-            Parallel.ForEach(Particles, particle =>
+            Parallel.ForEach(Particles, (Action<Particle>)(particle =>
             {
                 if (!particle.IsBoundaryParticle)
 
@@ -125,9 +125,9 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                     particle.SourceTerm = IISPH.GetSourceTerm(particle, ParticleSizeH, TimeStep, ElapsedTime, Density, kernel);
                     particle.DiagonalElement = IISPH.GetDiagonalElement(particle, ParticleSizeH, TimeStep, Gamma, kernel);
                     //particle.PredictedPressure = 0.2f * particle.PredictedPressure * (TimeStep - ElapsedTime);
-                    particle.PredictedPressure = 0;
+                    particle.Pressure = 0;
                 }
-            });
+            }));
         }
 
         
@@ -178,12 +178,12 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                     {
                         if (particle.IsBoundaryParticle)
                         {
-                            pressureAcceleration -= Gamma * neighbour.Mass * 2 * (particle.PredictedPressure / particleLastDensity2) * kernel.GradW(particle.Position, neighbour.Position);
+                            pressureAcceleration -= Gamma * neighbour.Mass * 2 * (particle.Pressure / particleLastDensity2) * kernel.GradW(particle.Position, neighbour.Position);
                         }
                         else
                         {
                             float neighbourLastDensity2 = neighbour.LastDensity * neighbour.LastDensity;
-                            float innerTerm = (particle.PredictedPressure / particleLastDensity2) + (neighbour.PredictedPressure / neighbourLastDensity2);
+                            float innerTerm = (particle.Pressure / particleLastDensity2) + (neighbour.Pressure / neighbourLastDensity2);
                             pressureAcceleration -= neighbour.Mass * innerTerm * kernel.GradW(particle.Position, neighbour.Position);
                         }
                     }
@@ -218,8 +218,8 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                 if (particle.DiagonalElement != 0)
                 {
                     //particle.Pressure = particle.PredictedPressure;
-                    float innerTerm = particle.PredictedPressure + omega * ((particle.SourceTerm - Ap) / particle.DiagonalElement);
-                    particle.PredictedPressure = Math.Max(innerTerm, 0);
+                    float innerTerm = particle.Pressure + omega * ((particle.SourceTerm - Ap) / particle.DiagonalElement);
+                    particle.Pressure = Math.Max(innerTerm, 0);
                         //particle.Pressure = particle.PredictedPressure;
                 }
                 averageDensityError += Ap - particle.SourceTerm / Density;
@@ -237,7 +237,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             {
                 if (!particle.IsBoundaryParticle)
                 {
-                    particle.Pressure = particle.PredictedPressure;
+                    particle.Pressure = particle.Pressure;
                     particle.Velocity = TimeStep * particle.PressureAcceleration + particle.PredictedVelocity;
                     particle.Position += TimeStep * particle.Velocity;
                 }

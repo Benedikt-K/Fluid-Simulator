@@ -128,7 +128,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                 {
                     particle.Velocity = TimeStep * particle.PressureAcceleration + particle.PredictedVelocity;
                     particle.Position += TimeStep * particle.Velocity;
-                    particle.Pressure = particle.PredictedPressure;
+                    particle.Pressure = particle.Pressure;
                 }
             }
         }
@@ -169,12 +169,12 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                     {
                         if (particle.IsBoundaryParticle)
                         {
-                            pressureAcceleration -= Gamma * neighbour.Mass * 2 * (particle.PredictedPressure / particleLastDensity2) * kernel.GradW(particle.Position, neighbour.Position);
+                            pressureAcceleration -= Gamma * neighbour.Mass * 2 * (particle.Pressure / particleLastDensity2) * kernel.GradW(particle.Position, neighbour.Position);
                         }
                         else
                         {
                             float neighbourLastDensity2 = neighbour.LastDensity * neighbour.LastDensity;
-                            float innerTerm = (particle.PredictedPressure / particleLastDensity2) + (neighbour.PredictedPressure / neighbourLastDensity2);
+                            float innerTerm = (particle.Pressure / particleLastDensity2) + (neighbour.Pressure / neighbourLastDensity2);
                             pressureAcceleration -= neighbour.Mass * innerTerm * kernel.GradW(particle.Position, neighbour.Position);
                         }
                     }
