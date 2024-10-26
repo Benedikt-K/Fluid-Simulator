@@ -45,6 +45,7 @@ namespace SPH_Bachelorprojekt
             public int NumerOfTimeStep = 0;
             public string CurrentDate = DateTime.Now.ToString("dd-MM-yyyy-HH-mm");
             public bool SaveSimulationToImages = false;
+            public int SaveEvery_X_TimeStep = 1;
             // what to use for simulation
             public bool UseIISPH = true;
             public bool UseNeighbour = true;
@@ -234,7 +235,8 @@ namespace SPH_Bachelorprojekt
                         SFML.Graphics.Texture screenshot = new SFML.Graphics.Texture(videoX, videoX);
                         screenshot.Update(window);
                         System.IO.Directory.CreateDirectory(CurrentDate);
-                        if (NumerOfTimeStep != 1) 
+                        bool saveCurrentTimeStep = NumerOfTimeStep % SaveEvery_X_TimeStep == 0;
+                        if (NumerOfTimeStep != 1 && saveCurrentTimeStep) 
                         {
                             screenshot.CopyToImage().SaveToFile(CurrentDate + "/" + "screenshot" + NumerOfTimeStep + ".png");
                         }
