@@ -104,23 +104,21 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
         
         public void PredictAdvection(Kernel kernel)
         {
-            Parallel.ForEach(Particles, particle =>
+            Parallel.ForEach(Particles, (Action<Particle>)(particle =>
             {
                 if (!particle.IsBoundaryParticle)
                 {
-                    particle.LastDensity = particle.Density;
                     particle.Density = SPH.CalculateDensityAtParticle(particle,  kernel);
                     Vector2 nonPressureAcceleration = CalculateViscosityAcceleration(particle, particle.Neighbours, kernel) + GetGravity(); ///add surface tension
                     particle.NonPressureAcceleration = nonPressureAcceleration;
                     particle.PredictedVelocity = particle.Velocity + TimeStep * nonPressureAcceleration;
                 }
-            });
+            }));
 
 
             Parallel.ForEach(Particles, (Action<Particle>)(particle =>
             {
                 if (!particle.IsBoundaryParticle)
-
                 {
                     particle.SourceTerm = IISPH.GetSourceTerm(particle, ParticleSizeH, TimeStep, ElapsedTime, Density, kernel);
                     particle.DiagonalElement = IISPH.GetDiagonalElement(particle, ParticleSizeH, TimeStep, Gamma, kernel);
@@ -138,7 +136,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             /// calculate Pressures of all particles
             ///
             int min_Iterations = 10;
-            int max_Iterations = 500;
+            int max_Iterations = 100;
             float max_error_Percentage = 2f; // given in %
             // dislocate to other file
             int currentIteration = 0;
@@ -172,7 +170,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             {
                 if (!particle.IsBoundaryParticle)
                 {
-                    float particleLastDensity2 = particle.LastDensity * particle.LastDensity;
+                    float particleLastDensity2 = particle.Density * particle.Density;
                     Vector2 pressureAcceleration = Vector2.Zero;
                     foreach (Particle neighbour in particle.Neighbours)
                     {
@@ -182,7 +180,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                         }
                         else
                         {
-                            float neighbourLastDensity2 = neighbour.LastDensity * neighbour.LastDensity;
+                            float neighbourLastDensity2 = neighbour.Density * neighbour.Density;
                             float innerTerm = (particle.Pressure / particleLastDensity2) + (neighbour.Pressure / neighbourLastDensity2);
                             pressureAcceleration -= neighbour.Mass * innerTerm * kernel.GradW(particle.Position, neighbour.Position);
                         }
@@ -237,7 +235,6 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             {
                 if (!particle.IsBoundaryParticle)
                 {
-                    particle.Pressure = particle.Pressure;
                     particle.Velocity = TimeStep * particle.PressureAcceleration + particle.PredictedVelocity;
                     particle.Position += TimeStep * particle.Velocity;
                 }

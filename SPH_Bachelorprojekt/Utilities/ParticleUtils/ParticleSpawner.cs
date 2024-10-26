@@ -557,7 +557,6 @@ namespace SPH_Bachelorprojekt.Utilities.ParticleUtils
         public List<Particle> FluidColumWithOutRand()
         {
             List<Particle> particleList = new List<Particle>();
-            float magitudeOfDeviation = 0.1f;
 
             // Spawn boundarys
             int maxI = 15;

@@ -21,7 +21,6 @@ namespace SPH_Bachelorprojekt.Simulation.Particles
         public Vector2 PressureAcceleration;
         public Vector2 NonPressureAcceleration;
         public float Density;
-        public float LastDensity;
         public float Mass;
         public float ParticleSizeH;
         public bool IsBoundaryParticle;
@@ -43,7 +42,6 @@ namespace SPH_Bachelorprojekt.Simulation.Particles
             A_i_i = 0.0f;
             Dij_Pj = Vector2.Zero;
             Density = density;
-            LastDensity = density;
             ParticleSizeH = particleSizeH;
             IsBoundaryParticle = boundaryParticle;
             IsRemoveable = isRemoveable;

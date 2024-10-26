@@ -32,10 +32,11 @@ namespace SPH_Bachelorprojekt
             public float StartingDensity;
             public float CurrentTimeStep = 0;
             public bool IsPaused = false;
-            public float MaxPressure = 1f;
+            public float MaxPressure = 0;
             public float TimeStep;
             public float Viscosity;
             public float Stiffness;
+            public SimulationLoop SimulationLoop;
             // what is used for colors
             private bool VelocityColors = true;
             private bool PressureColors = false;
@@ -43,22 +44,22 @@ namespace SPH_Bachelorprojekt
             // what to use for simulation
             public bool UseIISPH = true;
             public bool UseNeighbour = true;
-            public SimulationLoop SimulationLoop;
 
             public void Run()
             {
                 // INITIALIZE IMPORTANT VARIABLES
                 float particleSizeH = 5f;                           // works with 8
                 float viscosity = 20f;                              // works with 10
-                float timeStep = 0.2f;                              // works with 0.2
+                float timeStep = 0.1f;                              // works with 0.2
                 float startDensity = 0.3f;                          // works with 0.3
                 float gravity = -0.8f;                              // works with -0.4
-                //float smoothingLength = 2 * particleSizeH;
                 float smoothingLength = particleSizeH;
-                float stiffness = 300f;                             // works with 300  -> größeres k kleinerer TimeStep
-                // Scaling for better visibility
-                float scaleFactorDrawing = 2f;
 
+                // ONLY FOR SESPH
+                float stiffness = 300f;                             // works with 300  -> größeres k kleinerer TimeStep
+
+                // ONLY FOR VISUALS, scaling
+                float scaleFactorDrawing = 2f;
 
                 // for plotting later
                 StartingDensity = startDensity;
@@ -76,7 +77,7 @@ namespace SPH_Bachelorprojekt
 
                 // Sim
                 //List<Particle> particles = spawner.FluidColum();
-                //List<Particle> particles = spawner.FluidColumOneLayerBoundary();
+                List<Particle> particles = spawner.FluidColumOneLayerBoundary();
                 //List<Particle> particles = spawner.FluidColumWithOutRand();
                 //List<Particle> particles = spawner.DroppingFluidColumn();
                 //List<Particle> particles = spawner.DroppingFluidColumnBig();
@@ -85,7 +86,7 @@ namespace SPH_Bachelorprojekt
                 //List<Particle> particles = spawner.BreakingDamBig();
                 //List<Particle> particles = spawner.BreakingDamBigAndWide();
                 //List<Particle> particles = spawner.BreakingDamBigAndWideTestLimit();
-                List<Particle> particles = spawner.BreakingDamBigAndWideTestLimitOneLayerBoundary();
+                //List<Particle> particles = spawner.BreakingDamBigAndWideTestLimitOneLayerBoundary();
                 //List<Particle> particles = spawner.FunnelIntoBox();
                 //List<Particle> particles = spawner.BreakingDamBigWithHole();
                 //List<Particle> particles = spawner.BreakingDamOnBothSides();

@@ -18,9 +18,10 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
         public static float GetDiagonalElement(Particle particle, float particleSizeH, float TimeStep, float Gamma, Kernel kernel)
         {
             float diagonalElement = 0;
+            float timeStep2 = TimeStep * TimeStep;
             foreach (Particle neighbour in particle.Neighbours)
             {
-                float particleLastDensity2 = particle.LastDensity * particle.LastDensity;
+                float particleLastDensity2 = particle.Density * particle.Density;
                 if (neighbour.IsBoundaryParticle)
                 {
                     // BOUNDARY N
@@ -68,7 +69,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                     diagonalElement += neighbour.Mass * otherdotProduct;
                 }
             }
-            diagonalElement *= TimeStep * TimeStep;
+            diagonalElement *= timeStep2;
             return diagonalElement;
         }
 
@@ -76,7 +77,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
         public static float GetSourceTerm(Particle particle, float particleSizeH, float TimeStep, float ElapsedTime, float fluidDensity, Kernel kernel)
         {
             /////////////// mybe here error ////////// check again
-            float predictedDensityError = fluidDensity - particle.Density; // maybe LastDensity
+            float predictedDensityError = fluidDensity - particle.Density;
             foreach (Particle neighbour in particle.Neighbours)
             {
                 if (neighbour.IsBoundaryParticle)
@@ -100,7 +101,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             float timeStep2 = timeStep * timeStep;
             float Ap = 0f;
             // compute divergence of velocity change due to pressureAcc
-            foreach (Particle neighbour in particle.Neighbours) // OLD = foreach (Particle neighbour in Particles)
+            foreach (Particle neighbour in particle.Neighbours) 
             {
                 if (neighbour.IsBoundaryParticle)
                 {
@@ -128,7 +129,6 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                 {
                     particle.Velocity = TimeStep * particle.PressureAcceleration + particle.PredictedVelocity;
                     particle.Position += TimeStep * particle.Velocity;
-                    particle.Pressure = particle.Pressure;
                 }
             }
         }
@@ -163,7 +163,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             {
                 if (!particle.IsBoundaryParticle)
                 {
-                    float particleLastDensity2 = particle.LastDensity * particle.LastDensity;
+                    float particleLastDensity2 = particle.Density * particle.Density;
                     Vector2 pressureAcceleration = Vector2.Zero;
                     foreach (Particle neighbour in particle.Neighbours)
                     {
@@ -173,7 +173,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                         }
                         else
                         {
-                            float neighbourLastDensity2 = neighbour.LastDensity * neighbour.LastDensity;
+                            float neighbourLastDensity2 = neighbour.Density * neighbour.Density;
                             float innerTerm = (particle.Pressure / particleLastDensity2) + (neighbour.Pressure / neighbourLastDensity2);
                             pressureAcceleration -= neighbour.Mass * innerTerm * kernel.GradW(particle.Position, neighbour.Position);
                         }
