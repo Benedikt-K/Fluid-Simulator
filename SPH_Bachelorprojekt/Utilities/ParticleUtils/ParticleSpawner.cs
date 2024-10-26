@@ -519,99 +519,25 @@ namespace SPH_Bachelorprojekt.Utilities.ParticleUtils
             return particleList;
         }
 
-        public List<Particle> FluidColumOneLayerBoundary()
+        public List<Particle> FluidColumOneLayerBoundary(int height, int width)
         {
             List<Particle> particleList = new List<Particle>();
-            float magitudeOfDeviation = 0.1f;
 
             // Spawn boundarys
-            int maxI = 15;
-            int maxJ = 50;
-            for (int i = 6; i < maxI; i += 1)
+            for (int i = 6; i < height; i += 1)
             {
-                for (int j = 6; j < maxJ; j += 1)
+                for (int j = 6; j < width; j += 1)
                 {
-                    if (i < 7 || i > maxI - 2 || j < 7 || j > maxJ - 2)
+                    if (i < 7 || i > height - 2 || j < 7 || j > width - 2)
                     {
                         Particle particle = new Particle(new Vector2(i * ParticleSizeH, j * ParticleSizeH), Density, ParticleSizeH, true);
                         particleList.Add(particle);
                     }
                 }
             }
-
-            //STANDART
-            //int maxI = 13;
-            //int maxJ = 68;
-            // spawn fluid
-            for (int i = 7; i < maxI - 1; i++)
+            for (int i = 7; i < height - 1; i++)
             {
-                for (int j = 7; j < maxJ - 5; j++)
-                {
-                    Particle particle1 = new Particle(new Vector2(i * ParticleSizeH + GetRandomValue(magitudeOfDeviation), j * ParticleSizeH), Density, ParticleSizeH, false);
-                    particleList.Add(particle1);
-                }
-            }
-            return particleList;
-        }
-
-        public List<Particle> FluidColumHighOneLayerBoundary()
-        {
-            List<Particle> particleList = new List<Particle>();
-            float magitudeOfDeviation = 0.1f;
-
-            // Spawn boundarys
-            int maxI = 15;
-            int maxJ = 100;
-            for (int i = 6; i < maxI; i += 1)
-            {
-                for (int j = 6; j < maxJ; j += 1)
-                {
-                    if (i < 7 || i > maxI - 2 || j < 7 || j > maxJ - 2)
-                    {
-                        Particle particle = new Particle(new Vector2(i * ParticleSizeH, j * ParticleSizeH), Density, ParticleSizeH, true);
-                        particleList.Add(particle);
-                    }
-                }
-            }
-
-            //STANDART
-            //int maxI = 13;
-            //int maxJ = 68;
-            // spawn fluid
-            for (int i = 7; i < maxI - 1; i++)
-            {
-                for (int j = 7; j < maxJ - 5; j++)
-                {
-                    Particle particle1 = new Particle(new Vector2(i * ParticleSizeH + GetRandomValue(magitudeOfDeviation), j * ParticleSizeH), Density, ParticleSizeH, false);
-                    particleList.Add(particle1);
-                }
-            }
-            return particleList;
-        }
-
-        public List<Particle> FluidColumWithOutRand()
-        {
-            List<Particle> particleList = new List<Particle>();
-
-            // Spawn boundarys
-            int maxI = 15;
-            int maxJ = 45;
-            for (int i = 5; i < maxI; i += 1)
-            {
-                for (int j = 5; j < maxJ; j += 1)
-                {
-                    if (i < 7 || i > maxI - 3 || j < 7 || j > maxJ - 3)
-                    {
-                        Particle particle = new Particle(new Vector2(i * ParticleSizeH, j * ParticleSizeH), Density, ParticleSizeH, true);
-                        particleList.Add(particle);
-                    }
-                }
-            }
-
-            // spawn fluid
-            for (int i = 7; i < 13; i++)
-            {
-                for (int j = 7; j < 18; j++)
+                for (int j = 7; j < width - 5; j++)
                 {
                     Particle particle1 = new Particle(new Vector2(i * ParticleSizeH, j * ParticleSizeH), Density, ParticleSizeH, false);
                     particleList.Add(particle1);

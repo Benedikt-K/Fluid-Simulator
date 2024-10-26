@@ -75,8 +75,8 @@ namespace SPH_Bachelorprojekt
 
                 // Sim
                 //List<Particle> particles = spawner.FluidColum();
-                List<Particle> particles = spawner.FluidColumOneLayerBoundary();
-                //List<Particle> particles = spawner.FluidColumHighOneLayerBoundary();
+                List<Particle> particles = spawner.FluidColumOneLayerBoundary(15, 50);
+                //List<Particle> particles = spawner.FluidColumOneLayerBoundary(15, 100);
                 //List<Particle> particles = spawner.FluidColumWithOutRand();
                 //List<Particle> particles = spawner.DroppingFluidColumn();
                 //List<Particle> particles = spawner.DroppingFluidColumnBig();
