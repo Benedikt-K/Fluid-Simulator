@@ -124,6 +124,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                 {
                     particle.SourceTerm = IISPH.GetSourceTerm(particle, ParticleSizeH, TimeStep, ElapsedTime, Density, kernel);
                     particle.DiagonalElement = IISPH.GetDiagonalElement(particle, ParticleSizeH, TimeStep, Gamma, kernel);
+                    //particle.PredictedPressure = 0.2f * particle.PredictedPressure * (TimeStep - ElapsedTime);
                     particle.PredictedPressure = 0;
                 }
             });
@@ -137,8 +138,8 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             /// calculate Pressures of all particles
             ///
             int min_Iterations = 10;
-            int max_Iterations = 100;
-            float max_error_Percentage = 1f; // given in %
+            int max_Iterations = 500;
+            float max_error_Percentage = 2f; // given in %
             // dislocate to other file
             int currentIteration = 0;
             float averageDensityError = float.PositiveInfinity;
@@ -154,11 +155,11 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                 percentageDensityError = (averageDensityError - Density) / Density;
                 
                 float eta = max_error_Percentage * 0.01f * Density;
-                continueWhile = Math.Abs(averageDensityError) >= eta;
-                //Console.WriteLine("iter: " + currentIteration + ", err: " + Math.Abs(averageDensityError) + "eta: " + eta);
-                
+                float test = 0.02f;
+                continueWhile = Math.Abs(averageDensityError) >= test;
+                Console.WriteLine("iter: " + currentIteration + ", err: " + Math.Abs(averageDensityError) + "eta: " + eta);
             }
-            if (currentIteration != 3)
+            if (currentIteration != min_Iterations)
             {
                 Console.WriteLine("iterations needed: " + currentIteration);
             }
@@ -221,7 +222,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                     particle.PredictedPressure = Math.Max(innerTerm, 0);
                         //particle.Pressure = particle.PredictedPressure;
                 }
-                averageDensityError -= Ap - particle.SourceTerm;
+                averageDensityError += Ap - particle.SourceTerm / Density;
             }
             averageDensityError /= FluidParticleCount;
 

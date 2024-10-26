@@ -120,7 +120,7 @@ namespace SPH_Bachelorprojekt
                     ////////////////////////
                     //UPDATE TimeStep
                     ////////////////////////
-                    if (SimulationLoop.CalculateParticleLambdaCFL(SimulationLoop.MaxVelocity) > 0.8f)
+                    if (SimulationLoop.CalculateParticleLambdaCFL(SimulationLoop.MaxVelocity) > 0.5f)
                     {
                         timeStep *= 0.7f;
                     }
@@ -161,7 +161,7 @@ namespace SPH_Bachelorprojekt
                             if (VelocityColors)
                             {
                                 // Color for velocity
-                                float lambdaParticle = SimulationLoop.CalculateParticleLambdaCFL(particle.Velocity * 3);
+                                float lambdaParticle = SimulationLoop.CalculateParticleLambdaCFL(particle.Velocity * 2);
                                 circle.FillColor = GetColor(lambdaParticle);
                             }
                             else if (PressureColors) 
