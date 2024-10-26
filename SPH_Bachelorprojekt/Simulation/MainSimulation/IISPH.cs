@@ -76,7 +76,6 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
 
         public static float GetSourceTerm(Particle particle, float particleSizeH, float TimeStep, float ElapsedTime, float fluidDensity, Kernel kernel)
         {
-            /////////////// mybe here error ////////// check again
             float predictedDensityError = fluidDensity - particle.Density;
             foreach (Particle neighbour in particle.Neighbours)
             {

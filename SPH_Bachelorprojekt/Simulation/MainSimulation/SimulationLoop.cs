@@ -95,7 +95,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             // variables for pressure solving
             int min_Iterations = 200;
             int max_Iterations = 500;
-            float max_error_Percentage = 0.001f;
+            float max_error_Percentage = 0.1f;
             //IISPH.PressureSolve(ref Particles, min_Iterations, max_Iterations, max_error_Percentage, Density, Gamma, kernel);
             PressureSolve(kernel);
             UpdateIISPH(kernel);

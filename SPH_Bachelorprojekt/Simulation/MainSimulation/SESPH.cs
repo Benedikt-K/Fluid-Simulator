@@ -16,7 +16,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
     {
         public Vector2 CalculatePressureAcceleration(Particle particle, List<Particle> neighbours, Kernel kernel)
         {
-            // boundary handling with mirroring
+            // boundary handling with mirroring (ahnki et al. 2012)
             Vector2 pressureAcceleration = Vector2.Zero;
             Vector2 pressureAccelerationBoundary = Vector2.Zero;
             float pressureOverDensity2 = particle.Pressure / (particle.Density * particle.Density);
