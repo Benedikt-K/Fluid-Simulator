@@ -17,10 +17,8 @@ namespace SPH_Bachelorprojekt
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Start");
             var window = new SimpleWindow();
             window.Run();
-            //Console.WriteLine("All done");
         }
         class SimpleWindow
         {
@@ -38,9 +36,9 @@ namespace SPH_Bachelorprojekt
             public float Stiffness;
             public SimulationLoop SimulationLoop;
             // what is used for colors
-            private bool VelocityColors = true;
-            private bool PressureColors = false;
-            private bool DensityColors = false;
+            private readonly bool VelocityColors = true;
+            private readonly bool PressureColors = false;
+            private readonly bool DensityColors = false;
             // what to use for simulation
             public bool UseIISPH = true;
             public bool UseNeighbour = true;
@@ -68,9 +66,9 @@ namespace SPH_Bachelorprojekt
                 Stiffness = stiffness;
                 
                 // initialize window
-                uint videoY = 800;
-                var mode = new VideoMode(1400, videoY);
-                var window = new RenderWindow(mode, "SPH Simulation - Benedikt Kuss");
+                uint videoY = 1000;
+                var mode = new VideoMode(1800, videoY);
+                var window = new RenderWindow(mode, "Bachelorthesis - SPH Simulation - Benedikt Kuss");
                 var view = window.GetView();
                 window.KeyPressed += Window_KeyPressed;
                 ParticleSpawner spawner = new ParticleSpawner(startDensity, particleSizeH);
@@ -78,6 +76,7 @@ namespace SPH_Bachelorprojekt
                 // Sim
                 //List<Particle> particles = spawner.FluidColum();
                 List<Particle> particles = spawner.FluidColumOneLayerBoundary();
+                //List<Particle> particles = spawner.FluidColumHighOneLayerBoundary();
                 //List<Particle> particles = spawner.FluidColumWithOutRand();
                 //List<Particle> particles = spawner.DroppingFluidColumn();
                 //List<Particle> particles = spawner.DroppingFluidColumnBig();
