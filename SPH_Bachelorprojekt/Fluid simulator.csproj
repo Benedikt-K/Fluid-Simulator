@@ -125,7 +125,6 @@
     <Compile Include="Simulation\MainSimulation\IISPH.cs" />
     <Compile Include="Simulation\MainSimulation\SESPH.cs" />
     <Compile Include="Simulation\MainSimulation\SPH.cs" />
-    <Compile Include="Simulation\MainSimulation\Standard.cs" />
     <Compile Include="Simulation\Neighbours\NeighbourhoodSearchTest.cs" />
     <Compile Include="Simulation\Neighbours\Quadratic.cs" />
     <Compile Include="Simulation\MainSimulation\SimulationLoop.cs" />

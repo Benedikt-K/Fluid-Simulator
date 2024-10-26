@@ -14,8 +14,6 @@ namespace SPH_Bachelorprojekt.Utilities.ParticleUtils
         public List<Vector2> Positions;
         public float Density;
         public float ParticleSizeH;
-        public Vector2 LeftBottomOfDomain;
-        public Vector2 RightTopOfDomain;
 
         public ParticleSpawner(List<Vector2> positions, float density, float particleSizeH)
         {
