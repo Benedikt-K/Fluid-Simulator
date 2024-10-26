@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,7 +26,8 @@ namespace SPH_Bachelorprojekt
             public ScottPlot.Plot plot = new ScottPlot.Plot();
             List<float> dataX = new List<float>();
             List<float> dataY = new List<float>();
-            public bool StartDataCollection = false;
+            public bool StartDensityErrorCollection = false;
+            public bool StartDensityErrorAndIterationCollection = false;
             public int numberOfScreenshots = 0;
             public float StartingDensity;
             public float CurrentTimeStep = 0;
@@ -39,6 +41,10 @@ namespace SPH_Bachelorprojekt
             private readonly bool VelocityColors = true;
             private readonly bool PressureColors = false;
             private readonly bool DensityColors = false;
+            // save images to folder ?
+            public int NumerOfTimeStep = 0;
+            public string CurrentDate = DateTime.Now.ToString("dd-MM-yyyy-HH-mm");
+            public bool SaveSimulationToImages = false;
             // what to use for simulation
             public bool UseIISPH = true;
             public bool UseNeighbour = true;
@@ -67,7 +73,8 @@ namespace SPH_Bachelorprojekt
                 
                 // initialize window
                 uint videoY = 1000;
-                var mode = new VideoMode(1800, videoY);
+                uint videoX = 1800;
+                var mode = new VideoMode(videoX, videoY);
                 var window = new RenderWindow(mode, "Bachelorthesis - SPH Simulation - Benedikt Kuss");
                 var view = window.GetView();
                 window.KeyPressed += Window_KeyPressed;
@@ -75,8 +82,8 @@ namespace SPH_Bachelorprojekt
 
                 // Sim
                 //List<Particle> particles = spawner.FluidColum();
-                List<Particle> particles = spawner.FluidColumOneLayerBoundary(15, 50);
-                //List<Particle> particles = spawner.FluidColumOneLayerBoundary(15, 100);
+                //List<Particle> particles = spawner.FluidColumOneLayerBoundary(15, 50);
+                List<Particle> particles = spawner.FluidColumOneLayerBoundary(15, 100);
                 //List<Particle> particles = spawner.FluidColumWithOutRand();
                 //List<Particle> particles = spawner.DroppingFluidColumn();
                 //List<Particle> particles = spawner.DroppingFluidColumnBig();
@@ -120,6 +127,9 @@ namespace SPH_Bachelorprojekt
                     ////////////////////////
                     //UPDATE TimeStep
                     ////////////////////////
+                    // increase current Timer
+                    CurrentTimeStep += timeStep;
+                    // update TimeStep size
                     if (SimulationLoop.CalculateParticleLambdaCFL(SimulationLoop.MaxVelocity) > 0.5f)
                     {
                         timeStep *= 0.7f;
@@ -157,7 +167,6 @@ namespace SPH_Bachelorprojekt
                         }
                         else
                         {
-                            // color coded
                             if (VelocityColors)
                             {
                                 // Color for velocity
@@ -171,12 +180,6 @@ namespace SPH_Bachelorprojekt
                                 {
                                     circle.FillColor = SFML.Graphics.Color.Blue;
                                 }
-                                if (!particle.IsBoundaryParticle)
-                                {
-                                    //Console.WriteLine(particle.Pressure);
-                                }
-                                //float pressureFactor = particle.Pressure  / 20f;
-                                //float pressureFactor = particle.Pressure / MaxPressure;
                                 float maxPressure = 0f;
                                 foreach(Particle particle1 in simulationLoop.Particles)
                                 {
@@ -196,21 +199,19 @@ namespace SPH_Bachelorprojekt
                             }
                             else
                             {
+                                // standart color is blue
                                 circle.FillColor = SFML.Graphics.Color.Blue;
                             }
                         }
                         window.Draw(circle);
                     }
-                    // Finally, display the rendered frame on screen
+                    // display the rendered frame on screen
                     window.Display();
-
                     /////////////////////
                     // DATA COLLECTION
                     /////////////////////
-                    // add data to Collection
-                    if (StartDataCollection) 
+                    if (StartDensityErrorCollection) 
                     {
-                        CurrentTimeStep += timeStep;
                         dataX.Add(CurrentTimeStep);
                         dataY.Add((simulationLoop.AverageDensity - StartingDensity) / StartingDensity * 100);
                         if (CurrentTimeStep >= 70)
@@ -220,8 +221,22 @@ namespace SPH_Bachelorprojekt
                             //plot.Add.Annotation("Viscosity: " + Viscosity + Environment.NewLine + "Stiffness: " + Stiffness + Environment.NewLine + "TimeStep: " + TimeStep);
                             // save to png
                             plot.SavePng("AverageDensityOverTime.png", 800, 600);
-                            StartDataCollection = false;
+                            StartDensityErrorCollection = false;
                             Console.WriteLine("stopped and saved");
+                        }
+                    }
+                    /////////////////////
+                    //SAVE SIMULATION IMAGES
+                    /////////////////////
+                    if (SaveSimulationToImages && !IsPaused)
+                    {
+                        NumerOfTimeStep++;
+                        SFML.Graphics.Texture screenshot = new SFML.Graphics.Texture(videoX, videoX);
+                        screenshot.Update(window);
+                        System.IO.Directory.CreateDirectory(CurrentDate);
+                        if (NumerOfTimeStep != 1) 
+                        {
+                            screenshot.CopyToImage().SaveToFile(CurrentDate + "/" + "screenshot" + NumerOfTimeStep + ".png");
                         }
                     }
                 }
@@ -250,7 +265,7 @@ namespace SPH_Bachelorprojekt
                 }
                 if (e.Code == SFML.Window.Keyboard.Key.S)
                 {
-                    if (StartDataCollection)
+                    if (StartDensityErrorCollection)
                     {
                         // save data to file 
                         plot.Add.Scatter(dataX, dataY);
@@ -264,7 +279,7 @@ namespace SPH_Bachelorprojekt
                     else
                     {
                         CurrentTimeStep = 0;
-                        StartDataCollection = true;
+                        StartDensityErrorCollection = true;
                         Console.WriteLine("Starting data collection");
                     }
                 }
