@@ -49,8 +49,8 @@ namespace SPH_Bachelorprojekt
             // save Stimestep screen to folder ?
             public int NumerOfTimeStep = 0;
             public string CurrentDate = DateTime.Now.ToString("dd-MM-yyyy-HH-mm");
-            public bool SaveSimulationToImages = false;
-            public int SaveEvery_X_TimeStep = 1;
+            public bool SaveSimulationToImages = true;
+            public int SaveEvery_X_TimeStep = 2;
             // what to use for simulation
             public bool UseIISPH = true;
             public bool UseNeighbour = true;
@@ -137,14 +137,14 @@ namespace SPH_Bachelorprojekt
                     // increase current Timer
                     CurrentTimeStep += timeStep;
                     // update TimeStep size
-                    if (SimulationLoop.CalculateParticleLambdaCFL(SimulationLoop.MaxVelocity) > 0.5f)
+                    /*if (SimulationLoop.CalculateParticleLambdaCFL(SimulationLoop.MaxVelocity) > 0.5f)
                     {
                         timeStep *= 0.7f;
                     }
                     else if (SimulationLoop.CalculateParticleLambdaCFL(SimulationLoop.MaxVelocity) > 0.2f)
                     {
                         timeStep *= 1.5f;
-                    }
+                    }*/
                     ////////////////////////
                     //UPDATE PARTICLES
                     ////////////////////////
@@ -195,7 +195,7 @@ namespace SPH_Bachelorprojekt
                                         maxPressure = particle1.Pressure;
                                     }
                                 }
-                                float pressureFactor = particle.Pressure / maxPressure + 0.01f;
+                                float pressureFactor = particle.Pressure / (maxPressure + 0.01f);
                                 circle.FillColor = GetColor(pressureFactor);
                             }
                             else if (DensityColors)
@@ -244,7 +244,8 @@ namespace SPH_Bachelorprojekt
                         bool saveCurrentTimeStep = NumerOfTimeStep % SaveEvery_X_TimeStep == 0;
                         if (NumerOfTimeStep != 1 && saveCurrentTimeStep) 
                         {
-                            screenshot.CopyToImage().SaveToFile(CurrentDate + "/" + "screenshot" + NumerOfTimeStep + ".png");
+                            string fileName = NumerOfTimeStep.ToString("D4");
+                            screenshot.CopyToImage().SaveToFile(CurrentDate + "/" + "screenshot" + fileName + ".png");
                         }
                     }
                     if (StartDensityErrorAndIterationCollection)

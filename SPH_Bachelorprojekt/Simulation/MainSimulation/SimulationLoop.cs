@@ -96,28 +96,31 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             PredictAdvection(kernel);
 
             // variables for pressure solving
-            int min_Iterations = 200;
-            int max_Iterations = 500;
-            float max_error_Percentage = 0.1f;
+            //int min_Iterations = 200;
+            //int max_Iterations = 500;
+            //float max_error_Percentage = 0.1f;
             //IISPH.PressureSolve(ref Particles, min_Iterations, max_Iterations, max_error_Percentage, Density, Gamma, kernel);
-            PressureSolve(kernel, ref densityErrorData, ref iterationData, CollectDensityIterErr);
+            PressureSolve(kernel, ref densityErrorData, ref iterationData, ref iterationData, CollectDensityIterErr);
             UpdateIISPH(kernel);
         }
 
         
         public void PredictAdvection(Kernel kernel)
         {
+            AverageDensity = 0;
             Parallel.ForEach(Particles, particle =>
             {
                 if (!particle.IsBoundaryParticle)
                 {
-                    particle.Density = SPH.CalculateDensityAtParticle(particle,  kernel);
+                    float density = SPH.CalculateDensityAtParticle(particle, kernel);
+                    AverageDensity += density;
+                    particle.Density = density;
                     Vector2 nonPressureAcceleration = CalculateViscosityAcceleration(particle, particle.Neighbours, kernel) + GetGravity(); ///add surface tension
                     particle.NonPressureAcceleration = nonPressureAcceleration;
                     particle.PredictedVelocity = particle.Velocity + TimeStep * nonPressureAcceleration;
                 }
             });
-
+            AverageDensity /= FluidParticleCount;
 
             Parallel.ForEach(Particles, particle =>
             {
@@ -125,39 +128,36 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                 {
                     particle.SourceTerm = IISPH.GetSourceTerm(particle, ParticleSizeH, TimeStep, ElapsedTime, Density, kernel);
                     particle.DiagonalElement = IISPH.GetDiagonalElement(particle, ParticleSizeH, TimeStep, Gamma, Density, kernel);
-                    //particle.Pressure = 0.2f * particle.Pressure * (TimeStep - ElapsedTime);
-                    particle.Pressure = 0;
+                    particle.Pressure = 0.2f * particle.Pressure * (TimeStep - ElapsedTime);
+                    //particle.Pressure = 0;
                 }
             });
         }
 
         
 
-        public void PressureSolve(Kernel kernel, ref List<float> densityErrorData, ref List<float> iterationData, bool collectAverageDensityErrIter)
+        public void PressureSolve(Kernel kernel, ref List<float> densityErrorData, ref List<float> iterationData, ref List<float> iterationCountData, bool collectAverageDensityErrIter)
         {
             ///
             /// calculate Pressures of all particles
             ///
-            int min_Iterations = 20;
-            int max_Iterations = 100;
-            float max_error_Percentage = 1f; // given in %
+            int min_Iterations = 10;
+            int max_Iterations = 10;
+            float max_error_Percentage = 0.1f; // given in %
             // dislocate to other file
             int currentIteration = 0;
             float averageDensityError = float.PositiveInfinity;
             bool continueWhile = true;
-            float percentageDensityError = float.PositiveInfinity;
 
 
             while ((continueWhile || (currentIteration < min_Iterations)) && (currentIteration < max_Iterations))
             {
                 averageDensityError = 0;
-                DoPressureSolveIteration(kernel, ref averageDensityError);
-                percentageDensityError = (averageDensityError - Density) / Density;
-                float eta = max_error_Percentage * 0.01f * Density;
-                float test = 0.01f;
+                DoPressureSolveIteration(kernel, ref averageDensityError, currentIteration);
+                float eta = max_error_Percentage * 0.01f;
                 float absoluteAverageDensityError = Math.Abs(averageDensityError);
-                continueWhile = absoluteAverageDensityError >= test;
-                Console.WriteLine("iter: " + currentIteration + "---Err: " + absoluteAverageDensityError);
+                continueWhile = absoluteAverageDensityError >= eta;
+                //Console.WriteLine("iter: " + currentIteration + "---Err: " + absoluteAverageDensityError);
                 // add data for graph
                 if (collectAverageDensityErrIter && currentIteration > 0)
                 {
@@ -170,15 +170,17 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             {
                 Console.WriteLine("iterations needed: " + currentIteration);
             }
+            // Iterations needed data gerneration
+
         }
 
-        public void DoPressureSolveIteration(Kernel kernel, ref float averageDensityError)
+        public void DoPressureSolveIteration(Kernel kernel, ref float averageDensityError, int currentIter)
         {
             foreach (Particle particle in Particles)
             {
                 if (!particle.IsBoundaryParticle)
                 {
-                    float particleLastDensity2 = Density * Density;
+                    float particleLastDensity2 = Density;
                     Vector2 pressureAcceleration = Vector2.Zero;
                     foreach (Particle neighbour in particle.Neighbours)
                     {
@@ -188,7 +190,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                         }
                         else
                         {
-                            float neighbourLastDensity2 = Density * Density;
+                            float neighbourLastDensity2 = Density;
                             float innerTerm = (particle.Pressure / particleLastDensity2) + (neighbour.Pressure / neighbourLastDensity2);
                             pressureAcceleration -= neighbour.GetMass() * innerTerm * kernel.GradW(particle.Position, neighbour.Position);
                         }

@@ -11,7 +11,6 @@ namespace SPH_Bachelorprojekt.Simulation.Particles
     public class Particle
     {
         public Vector2 Position;
-        public Vector2 PositionNew;
         public Vector2 Velocity;
         public Vector2 PredictedVelocity;
         public float DiagonalElement;
@@ -32,7 +31,6 @@ namespace SPH_Bachelorprojekt.Simulation.Particles
         public Particle(Vector2 position, float density, float particleSizeH, bool boundaryParticle=false, bool isRemoveable=false)
         {
             Position = position;
-            PositionNew = position;
             Velocity = Vector2.Zero;
             PredictedVelocity = Vector2.Zero;
             Acceleration = Vector2.Zero;
@@ -58,6 +56,7 @@ namespace SPH_Bachelorprojekt.Simulation.Particles
             Velocity = velocity;
             PredictedVelocity = Vector2.Zero;
             Density = density;
+            Pressure = 0f;
             ParticleSizeH = particleSizeH;
             IsBoundaryParticle = boundaryParticle;
             // initialize mass
