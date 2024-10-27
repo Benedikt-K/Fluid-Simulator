@@ -149,7 +149,7 @@ namespace SPH_Bachelorprojekt
                     ////////////////////////
                     if (!IsPaused) 
                     {
-                        SimulationLoop.UpdateAllParticles(smoothingLength, UseIISPH, UseNeighbour, ref DensityIterationErrorDataX, ref DensityIterationErrorDataY);
+                        SimulationLoop.UpdateAllParticles(smoothingLength, UseIISPH, UseNeighbour, ref DensityIterationErrorDataX, ref DensityIterationErrorDataY, StartDensityErrorAndIterationCollection);
                     }
                     ///////////////////////
                     //DRAW PARTICLES
@@ -246,11 +246,17 @@ namespace SPH_Bachelorprojekt
                             screenshot.CopyToImage().SaveToFile(CurrentDate + "/" + "screenshot" + NumerOfTimeStep + ".png");
                         }
                     }
+                    if (StartDensityErrorAndIterationCollection)
+                    {
+                        var densityIterErrPlot = plot.Add.Scatter(DensityIterationErrorDataY, DensityIterationErrorDataX);
+                        plot.XLabel("Iteration");
+                        plot.YLabel("Average density error in %");
+                        plot.SavePng("DensityErrorPerIteration" + ErrorCollectionPlotCount + ".png", 1000, 800);
+                        StartDensityErrorAndIterationCollection = false;
+                        plot.Remove(densityIterErrPlot);
+                    }
                 }
             }
-
-
-            
 
             private void Window_KeyPressed(object sender, SFML.Window.KeyEventArgs e)
             {
