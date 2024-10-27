@@ -128,8 +128,8 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                 {
                     particle.SourceTerm = IISPH.GetSourceTerm(particle, ParticleSizeH, TimeStep, ElapsedTime, Density, kernel);
                     particle.DiagonalElement = IISPH.GetDiagonalElement(particle, ParticleSizeH, TimeStep, Gamma, Density, kernel);
-                    particle.Pressure = 0.2f * particle.Pressure * (TimeStep - ElapsedTime);
-                    //particle.Pressure = 0;
+                    //particle.Pressure = 0.2f * particle.Pressure * (TimeStep - ElapsedTime);
+                    particle.Pressure = 0;
                 }
             });
         }
