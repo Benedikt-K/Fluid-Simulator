@@ -322,6 +322,11 @@ namespace SPH_Bachelorprojekt
                     StartDensityErrorAndIterationCollection = true;
                     ErrorCollectionPlotCount++;
                 }
+                if (e.Code == SFML.Window.Keyboard.Key.L)
+                {
+                    // toggle saving to image
+                    SaveSimulationToImages = true;
+                }
             }
 
             private SFML.Graphics.Color GetColor(float lambdaParticle)
