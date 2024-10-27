@@ -157,9 +157,9 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                 float test = 0.01f;
                 float absoluteAverageDensityError = Math.Abs(averageDensityError);
                 continueWhile = absoluteAverageDensityError >= test;
-                Console.WriteLine("iter: " + currentIteration + ", err: " + absoluteAverageDensityError + "eta: " + eta);
+                Console.WriteLine("iter: " + currentIteration + "---Err: " + absoluteAverageDensityError);
                 // add data for graph
-                if (collectAverageDensityErrIter)
+                if (collectAverageDensityErrIter && currentIteration > 0)
                 {
                     densityErrorData.Add(absoluteAverageDensityError * 100); // get DensityError in %
                     iterationData.Add(currentIteration);
@@ -226,7 +226,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                     float innerTerm = particle.Pressure + omega * ((particle.SourceTerm - Ap) / particle.DiagonalElement);
                     particle.Pressure = Math.Max(innerTerm, 0);
                 }
-                averageDensityError += (Ap - particle.SourceTerm) / Density;
+                averageDensityError += (Ap - particle.SourceTerm);
             }
             averageDensityError /= FluidParticleCount;
 

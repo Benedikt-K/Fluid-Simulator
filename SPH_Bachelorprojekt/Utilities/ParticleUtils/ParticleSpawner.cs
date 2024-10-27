@@ -393,6 +393,47 @@ namespace SPH_Bachelorprojekt.Utilities.ParticleUtils
             return particleList;
         }
 
+        public List<Particle> BreakingDamOneLayerBoundary(int width, int height)
+        {
+            List<Particle> particleList = new List<Particle>();
+            float magitudeOfDeviation = 0f;
+
+            int fluidStart = width / 3;
+
+            // Spawn boundarys
+            for (int i = 6; i < width; i += 1)
+            {
+                for (int j = 6; j < height; j += 1)
+                {
+                    if (i < 7 || i > width - 2 || j < 7)
+                    {
+                        Particle particle = new Particle(new Vector2(i * ParticleSizeH, j * ParticleSizeH), Density, ParticleSizeH, true);
+                        particleList.Add(particle);
+                    }
+                }
+            }
+
+            // spawn removeable boundary
+            for (int j = 7; j < height; j += 1)
+            {
+                Particle particle = new Particle(new Vector2(fluidStart * ParticleSizeH, j * ParticleSizeH), Density, ParticleSizeH, true, true);
+                particleList.Add(particle);
+
+            }
+
+
+            // spawn fluid
+            for (int i = 7; i < fluidStart; i++)
+            {
+                for (int j = 7; j < height / 1.5; j++)
+                {
+                    Particle particle1 = new Particle(new Vector2(i * ParticleSizeH + GetRandomValue(magitudeOfDeviation), j * ParticleSizeH + GetRandomValue(magitudeOfDeviation)), Density, ParticleSizeH, false);
+                    particleList.Add(particle1);
+                }
+            }
+            return particleList;
+        }
+
         public List<Particle> FunnelIntoBox()
         {
             List<Particle> particleList = new List<Particle>();
