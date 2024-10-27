@@ -60,8 +60,8 @@ namespace SPH_Bachelorprojekt
                 // INITIALIZE IMPORTANT VARIABLES
                 float particleSizeH = 5f;                           // works with 8
                 float viscosity = 20f;                              // works with 10
-                float timeStep = 0.1f;                              // works with 0.2
-                float startDensity = 0.3f;                          // works with 0.3
+                float timeStep = 0.2f;                              // works with 0.2
+                float startDensity = 0.5f;                          // works with 0.3
                 float gravity = -0.8f;                              // works with -0.4
                 float smoothingLength = particleSizeH;
 

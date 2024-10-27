@@ -48,7 +48,7 @@ namespace SPH_Bachelorprojekt.Simulation.Particles
             // initialize mass
             Mass = density * ParticleSizeH * ParticleSizeH;
             Neighbours = new List<Particle>();
-            Pressure = 1f;
+            Pressure = 0f;
             SourceTerm = 0;
         }
 
@@ -79,15 +79,13 @@ namespace SPH_Bachelorprojekt.Simulation.Particles
 
         public float GetVolume()
         {
-            float volume = 0f;
-            volume = Mass / Density;
+            float volume = Mass / Density;
             return volume;
         }
 
         public float GetMass()
         {
-            float mass = 0f;
-            mass = Density * ParticleSizeH * ParticleSizeH;
+            float mass = Density * ParticleSizeH * ParticleSizeH;
             return mass;
         }
 
