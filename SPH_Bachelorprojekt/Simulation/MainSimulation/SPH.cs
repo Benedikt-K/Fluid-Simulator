@@ -61,7 +61,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             float density = 0f;
             if (particle.Neighbours.Count <= 1)
             {
-                return 0f;
+                return 0.0001f;
             }
             foreach (Particle neighbour in particle.Neighbours)
             {
