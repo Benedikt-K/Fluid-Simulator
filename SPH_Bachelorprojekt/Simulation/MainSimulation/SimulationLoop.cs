@@ -170,7 +170,6 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             {
                 Console.WriteLine("iterations needed: " + currentIteration);
             }
-            // save density to file
         }
 
         public void DoPressureSolveIteration(Kernel kernel, ref float averageDensityError)
