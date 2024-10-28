@@ -251,8 +251,8 @@ namespace SPH_Bachelorprojekt
                     if (StartDensityErrorAndIterationCollection)
                     {
                         // wrong density graph
-                        List<float> datapoints = new List<float> {0.543215f, 0.34143f, 0.224321f, 0.201f, 0.1822f, 0.17f, 0.1503f, 0.13f, 0.12f, 0.118f, 0.112f, 0.1032f, 0.102f, 0.097f };
-                        DensityIterationErrorDataY.AddRange(datapoints);
+                        //List<float> datapoints = new List<float> {0.543215f, 0.34143f, 0.224321f, 0.201f, 0.1822f, 0.17f, 0.1503f, 0.13f, 0.12f, 0.118f, 0.112f, 0.1032f, 0.102f, 0.097f };
+                        //DensityIterationErrorDataY.AddRange(datapoints);
                         //
                         var densityIterErrPlot = plot.Add.Scatter(DensityIterationErrorDataY, DensityIterationErrorDataX);
                         plot.XLabel("Iteration");

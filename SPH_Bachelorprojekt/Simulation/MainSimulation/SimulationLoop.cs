@@ -223,8 +223,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                 // add data for graph
                 if (collectAverageDensityErrIter && currentIteration > 0)
                 {
-                    //densityErrorData.Add(absoluteAverageDensityError * 100); // get DensityError in %
-                    //densityErrorData.Add();
+                    densityErrorData.Add(absoluteAverageDensityError * 100); // get DensityError in %
                     iterationData.Add(currentIteration);
                 }
                 currentIteration++;
