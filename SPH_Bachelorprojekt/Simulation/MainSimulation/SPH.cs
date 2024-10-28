@@ -65,7 +65,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             }
             foreach (Particle neighbour in particle.Neighbours)
             {
-                density += neighbour.Mass * kernel.W(Vector2.Distance(particle.Position, neighbour.Position));
+                density += neighbour.GetMass() * kernel.W(Vector2.Distance(particle.Position, neighbour.Position));
             }
             return density;
         }

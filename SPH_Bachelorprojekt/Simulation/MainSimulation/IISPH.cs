@@ -69,7 +69,6 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                     diagonalElement += timeStep2 * neighbour.GetMass() * otherdotProduct;
                 }
             }
-            //diagonalElement *= timeStep2;
             return diagonalElement;
         }
 
@@ -82,7 +81,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                 if (neighbour.IsBoundaryParticle)
                 {
                     //boundary particles
-                    float dotProduct = Vector2.Dot(particle.PredictedVelocity - neighbour.PredictedVelocity * (ElapsedTime + TimeStep), kernel.GradW(particle.Position, neighbour.Position));
+                    float dotProduct = Vector2.Dot(particle.PredictedVelocity - neighbour.Velocity * (ElapsedTime + TimeStep), kernel.GradW(particle.Position, neighbour.Position));
                     sourceTerm -= TimeStep * neighbour.GetMass() * dotProduct;
                 }
                 else

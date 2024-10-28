@@ -47,7 +47,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             Stiffness = stiffness;
             minDensity = density * 0.01f;
             Gravity = gravity;
-            Omega = 0.5f;
+            Omega = 0.7f;
             Gamma = 0.7f;
             //minDensity = 0f;
             int fluidCount = 0;
@@ -60,7 +60,6 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             }
             FluidParticleCount = fluidCount;
             DensityErrorIterCollectionCount = 0;
-
     }
 
     public SimulationLoop(float density, float particleSizeH, float timeStep, float viscosity)
@@ -129,7 +128,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                 {
                     particle.SourceTerm = IISPH.GetSourceTerm(particle, ParticleSizeH, TimeStep, ElapsedTime, Density, kernel);
                     particle.DiagonalElement = IISPH.GetDiagonalElement(particle, ParticleSizeH, TimeStep, Gamma, Density, kernel);
-                    //particle.Pressure = 0.2f * particle.Pressure * (TimeStep - ElapsedTime);
+                    //particle.Pressure = 0.5f * particle.Pressure * (ElapsedTime - TimeStep);
                     particle.Pressure = 0;
                 }
             });
@@ -191,7 +190,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                         }
                         else
                         {
-                            float innerTerm = (particle.Pressure / fluidDensity2) + (neighbour.Pressure / fluidDensity2);
+                            float innerTerm = (particle.Pressure / fluidDensity2) + (neighbour.Pressure / (neighbour.Density * neighbour.Density));
                             pressureAcceleration -= neighbour.GetMass() * innerTerm * kernel.GradW(particle.Position, neighbour.Position);
                         }
                     }
@@ -231,8 +230,8 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                     }
                     averageDensityError += (Ap - particle.SourceTerm);
                 }
-                averageDensityError /= FluidParticleCount;
             }
+            averageDensityError /= FluidParticleCount;
         }
 
         public void UpdateIISPH(Kernel kernel)
