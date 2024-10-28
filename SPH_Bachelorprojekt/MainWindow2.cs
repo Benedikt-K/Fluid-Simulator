@@ -49,7 +49,7 @@ namespace SPH_Bachelorprojekt
             // save Stimestep screen to folder ?
             public int NumerOfTimeStep = 0;
             public string CurrentDate = DateTime.Now.ToString("dd-MM-yyyy-HH-mm");
-            public bool SaveSimulationToImages = true;
+            public bool SaveSimulationToImages = false;
             public int SaveEvery_X_TimeStep = 2;
             // what to use for simulation
             public bool UseIISPH = true;
@@ -58,11 +58,11 @@ namespace SPH_Bachelorprojekt
             public void Run()
             {
                 // INITIALIZE IMPORTANT VARIABLES
-                float particleSizeH = 3f;                           // works with 8
+                float particleSizeH = 5f;                           // works with 8
                 float viscosity = 20f;                              // works with 10
-                float timeStep = 0.05f;                              // works with 0.2
+                float timeStep = 0.1f;                              // works with 0.2
                 float startDensity = 0.5f;                          // works with 0.3
-                float gravity = -0.8f;                              // works with -0.4
+                float gravity = -0.2f;                              // works with -0.8
                 float smoothingLength = particleSizeH;
 
                 // ONLY FOR SESPH
@@ -91,7 +91,7 @@ namespace SPH_Bachelorprojekt
                 //List<Particle> particles = spawner.FluidColumOneLayerBoundary(15, 50);
                 //List<Particle> particles = spawner.FluidColumOneLayerBoundary(15, 100);
                 //List<Particle> particles = spawner.BreakingDamBigAndWideTestLimitOneLayerBoundary();
-                List<Particle> particles = spawner.BreakingDamOneLayerBoundary(200, 150);
+                List<Particle> particles = spawner.BreakingDamOneLayerBoundary(100, 80);
                 //List<Particle> particles = spawner.FluidColumWithOutRand();
                 //List<Particle> particles = spawner.DroppingFluidColumn();
                 //List<Particle> particles = spawner.DroppingFluidColumnBig();

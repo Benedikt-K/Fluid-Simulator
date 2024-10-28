@@ -85,7 +85,7 @@ namespace SPH_Bachelorprojekt.Simulation.Particles
         public float GetMass()
         {
             float mass = Density * ParticleSizeH * ParticleSizeH;
-            return mass;
+            return Mass;
         }
 
     }

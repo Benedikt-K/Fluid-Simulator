@@ -59,9 +59,9 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
         public static float CalculateDensityAtParticle(Particle particle, Kernel kernel)
         {
             float density = 0f;
-            if (particle.Neighbours.Count <= 1)
+            if (particle.Neighbours.Count < 1)
             {
-                return 0.0001f;
+                return 0f;
             }
             foreach (Particle neighbour in particle.Neighbours)
             {
