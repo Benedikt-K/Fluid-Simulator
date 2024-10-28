@@ -398,7 +398,7 @@ namespace SPH_Bachelorprojekt.Utilities.ParticleUtils
             List<Particle> particleList = new List<Particle>();
             float magitudeOfDeviation = 0f;
 
-            int fluidStart = width / 2;
+            int fluidStart = width / 3;
 
             // Spawn boundarys
             for (int i = 6; i < width; i += 1)

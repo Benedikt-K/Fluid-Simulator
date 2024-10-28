@@ -15,7 +15,8 @@ namespace SPH_Bachelorprojekt.Simulation.Particles
         public Vector2 PredictedVelocity;
         public float DiagonalElement;
         public float A_i_i;
-        public Vector2 Dij_Pj;
+        public Vector2 DII;
+        public Vector2 DIJ_PJ;
         public Vector2 Acceleration;
         public Vector2 PressureAcceleration;
         public Vector2 NonPressureAcceleration;
@@ -38,7 +39,8 @@ namespace SPH_Bachelorprojekt.Simulation.Particles
             NonPressureAcceleration = Vector2.Zero;
             DiagonalElement = 0;
             A_i_i = 0.0f;
-            Dij_Pj = Vector2.Zero;
+            DII = Vector2.Zero;
+            DIJ_PJ = Vector2.Zero;
             Density = density;
             ParticleSizeH = particleSizeH;
             IsBoundaryParticle = boundaryParticle;

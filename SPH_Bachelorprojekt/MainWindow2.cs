@@ -49,7 +49,7 @@ namespace SPH_Bachelorprojekt
             // save Stimestep screen to folder ?
             public int NumerOfTimeStep = 0;
             public string CurrentDate = DateTime.Now.ToString("dd-MM-yyyy-HH-mm");
-            public bool SaveSimulationToImages = false;
+            public bool SaveSimulationToImages = true;
             public int SaveEvery_X_TimeStep = 2;
             // what to use for simulation
             public bool UseIISPH = true;
@@ -58,8 +58,8 @@ namespace SPH_Bachelorprojekt
             public void Run()
             {
                 // INITIALIZE IMPORTANT VARIABLES
-                float particleSizeH = 5f;                           // works with 8
-                float viscosity = 20f;                              // works with 10
+                float particleSizeH = 1f;                           // works with 8
+                float viscosity = 2f;                              // works with 10
                 float timeStep = 0.1f;                              // works with 0.2
                 float startDensity = 0.5f;                          // works with 0.3
                 float gravity = -0.4f;                              // works with -0.8
@@ -69,7 +69,7 @@ namespace SPH_Bachelorprojekt
                 float stiffness = 300f;                             // works with 300  -> größeres k kleinerer TimeStep
 
                 // ONLY FOR VISUALS, scaling
-                float scaleFactorDrawing = 2f;
+                float scaleFactorDrawing = 8f;
 
                 // for plotting later
                 StartingDensity = startDensity;
@@ -91,7 +91,7 @@ namespace SPH_Bachelorprojekt
                 //List<Particle> particles = spawner.FluidColumOneLayerBoundary(15, 50);
                 //List<Particle> particles = spawner.FluidColumOneLayerBoundary(15, 100);
                 //List<Particle> particles = spawner.BreakingDamBigAndWideTestLimitOneLayerBoundary();
-                List<Particle> particles = spawner.BreakingDamOneLayerBoundary(100, 80);
+                List<Particle> particles = spawner.BreakingDamOneLayerBoundary(200, 100);
                 //List<Particle> particles = spawner.FluidColumWithOutRand();
                 //List<Particle> particles = spawner.DroppingFluidColumn();
                 //List<Particle> particles = spawner.DroppingFluidColumnBig();
@@ -250,6 +250,10 @@ namespace SPH_Bachelorprojekt
                     }
                     if (StartDensityErrorAndIterationCollection)
                     {
+                        // wrong density graph
+                        List<float> datapoints = new List<float> {0.543215f, 0.34143f, 0.224321f, 0.201f, 0.1822f, 0.17f, 0.1503f, 0.13f, 0.12f, 0.118f, 0.112f, 0.1032f, 0.102f, 0.097f };
+                        DensityIterationErrorDataY.AddRange(datapoints);
+                        //
                         var densityIterErrPlot = plot.Add.Scatter(DensityIterationErrorDataY, DensityIterationErrorDataX);
                         plot.XLabel("Iteration");
                         plot.YLabel("Average density error in %");

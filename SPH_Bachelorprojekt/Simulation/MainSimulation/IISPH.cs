@@ -20,6 +20,9 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             float diagonalElement = 0;
             float timeStep2 = TimeStep * TimeStep;
             float fluidDensity2 = FluidDensity * FluidDensity;
+            float particleDensity = particle.Density / FluidDensity;
+            float particleDensity2 = particleDensity * particleDensity;
+            //fluidDensity2 = particleDensity2;
             foreach (Particle neighbour in particle.Neighbours)
             {
                 if (neighbour.IsBoundaryParticle)
