@@ -17,12 +17,9 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
     {
         public static float GetDiagonalElement(Particle particle, float particleSizeH, float TimeStep, float Gamma, float FluidDensity, Kernel kernel)
         {
-            float diagonalElement = 0;
+            float diagonalElement = 0f;
             float timeStep2 = TimeStep * TimeStep;
             float fluidDensity2 = FluidDensity * FluidDensity;
-            float particleDensity = particle.Density / FluidDensity;
-            float particleDensity2 = particleDensity * particleDensity;
-            //fluidDensity2 = particleDensity2;
             foreach (Particle neighbour in particle.Neighbours)
             {
                 if (neighbour.IsBoundaryParticle)

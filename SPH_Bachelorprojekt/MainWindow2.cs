@@ -59,7 +59,7 @@ namespace SPH_Bachelorprojekt
             {
                 // INITIALIZE IMPORTANT VARIABLES
                 float particleSizeH = 1f;                           // works with 8
-                float viscosity = 2f;                              // works with 10
+                float viscosity = 10f;                              // works with 10
                 float timeStep = 0.1f;                              // works with 0.2
                 float startDensity = 0.5f;                          // works with 0.3
                 float gravity = -0.4f;                              // works with -0.8
@@ -88,10 +88,10 @@ namespace SPH_Bachelorprojekt
 
                 // Sim
                 //List<Particle> particles = spawner.FluidColum();
-                //List<Particle> particles = spawner.FluidColumOneLayerBoundary(15, 50);
+                List<Particle> particles = spawner.FluidColumOneLayerBoundary(15, 50);
                 //List<Particle> particles = spawner.FluidColumOneLayerBoundary(15, 100);
                 //List<Particle> particles = spawner.BreakingDamBigAndWideTestLimitOneLayerBoundary();
-                List<Particle> particles = spawner.BreakingDamOneLayerBoundary(200, 100);
+                //List<Particle> particles = spawner.BreakingDamOneLayerBoundary(200, 100);
                 //List<Particle> particles = spawner.FluidColumWithOutRand();
                 //List<Particle> particles = spawner.DroppingFluidColumn();
                 //List<Particle> particles = spawner.DroppingFluidColumnBig();

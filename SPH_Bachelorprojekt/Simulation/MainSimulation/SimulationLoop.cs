@@ -148,7 +148,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                     particle.SourceTerm = IISPH.GetSourceTerm(particle, ParticleSizeH, TimeStep, ElapsedTime, Density, kernel);
                     particle.DiagonalElement = IISPH.GetDiagonalElement(particle, ParticleSizeH, TimeStep, Gamma, Density, kernel);
                     //particle.Pressure = 0.5f * particle.Pressure * (ElapsedTime - TimeStep);
-                    particle.Pressure = 0;
+                    particle.Pressure = Math.Max(0, Omega * (particle.SourceTerm / particle.DiagonalElement));
                 }
             });
 
@@ -203,12 +203,12 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             ///
             /// calculate Pressures of all particles
             ///
-            int min_Iterations = 2;
+            int min_Iterations = 5;
             int max_Iterations = 10;
             float max_error_Percentage = 0.1f; // given in %
             // dislocate to other file
             int currentIteration = 0;
-            float averageDensityError = float.PositiveInfinity;
+            float averageDensityError = 0;
             bool continueWhile = true;
 
 
@@ -217,13 +217,12 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                 averageDensityError = 0;
                 DoPressureSolveIteration(kernel, ref averageDensityError, currentIteration);
                 float eta = max_error_Percentage * 0.01f;
-                float absoluteAverageDensityError = Math.Abs(averageDensityError);
-                continueWhile = absoluteAverageDensityError >= eta;
+                continueWhile = averageDensityError >= eta;
                 Console.WriteLine("iter: " + currentIteration + "---Err: " + averageDensityError);
                 // add data for graph
                 if (collectAverageDensityErrIter && currentIteration > 0)
                 {
-                    densityErrorData.Add(absoluteAverageDensityError * 100); // get DensityError in %
+                    densityErrorData.Add(averageDensityError * 100); // get DensityError in %
                     iterationData.Add(currentIteration);
                 }
                 currentIteration++;
@@ -242,6 +241,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             {
                 if (!particle.IsBoundaryParticle)
                 {
+                    // compute pressure acceleration
                     float fluidDensity2 = Density * Density;
                     Vector2 pressureAcceleration = Vector2.Zero;
                     foreach (Particle neighbour in particle.Neighbours)
@@ -252,7 +252,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                         }
                         else
                         {
-                            float innerTerm = (particle.Pressure / fluidDensity2) + (neighbour.Pressure / (neighbour.Density * neighbour.Density));
+                            float innerTerm = (particle.Pressure / fluidDensity2) + (neighbour.Pressure / (fluidDensity2));
                             pressureAcceleration -= neighbour.GetMass() * innerTerm * kernel.GradW(particle.Position, neighbour.Position);
                         }
                     }
@@ -296,12 +296,12 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                     }
 
                     // update pressure
-                    if (particle.DiagonalElement != 0)
+                    if (particle.DiagonalElement > 0.0001f)
                     {
-                        float innerTerm = (1 - omega) * particle.Pressure + omega * ((particle.SourceTerm - Ap) / particle.DiagonalElement);
+                        float innerTerm = particle.Pressure + omega * ((particle.SourceTerm - Ap) / particle.DiagonalElement);
                         particle.Pressure = Math.Max(innerTerm, 0);
                     }
-                    averageDensityError += (Ap - particle.SourceTerm);
+                    averageDensityError += Math.Abs(Ap - particle.SourceTerm);
 
                     //NEW
                     /*particle.Pressure = 0;
