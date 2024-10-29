@@ -58,18 +58,18 @@ namespace SPH_Bachelorprojekt
             public void Run()
             {
                 // INITIALIZE IMPORTANT VARIABLES
-                float particleSizeH = 1f;                           // works with 8
-                float viscosity = 10f;                              // works with 10
+                float particleSizeH = 11f;                           // works with 8
+                float viscosity = 40f;                              // works with 10
                 float timeStep = 0.1f;                              // works with 0.2
-                float startDensity = 0.5f;                          // works with 0.3
-                float gravity = -0.4f;                              // works with -0.8
+                float startDensity = 0.3f;                          // works with 0.3
+                float gravity = -0.2f;                              // works with -0.8
                 float smoothingLength = particleSizeH;
 
                 // ONLY FOR SESPH
                 float stiffness = 300f;                             // works with 300  -> größeres k kleinerer TimeStep
 
                 // ONLY FOR VISUALS, scaling
-                float scaleFactorDrawing = 8f;
+                float scaleFactorDrawing = 1f;
 
                 // for plotting later
                 StartingDensity = startDensity;

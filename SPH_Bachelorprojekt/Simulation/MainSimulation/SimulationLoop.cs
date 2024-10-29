@@ -137,7 +137,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                 }
             });
             AverageDensity /= FluidParticleCount;
-            //Console.WriteLine("averageDensity : " + AverageDensity);
+            Console.WriteLine("averageDensity : " + AverageDensity);
 
             Parallel.ForEach(Particles, particle =>
             {
@@ -148,7 +148,8 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                     particle.SourceTerm = IISPH.GetSourceTerm(particle, ParticleSizeH, TimeStep, ElapsedTime, Density, kernel);
                     particle.DiagonalElement = IISPH.GetDiagonalElement(particle, ParticleSizeH, TimeStep, Gamma, Density, kernel);
                     //particle.Pressure = 0.5f * particle.Pressure * (ElapsedTime - TimeStep);
-                    particle.Pressure = Math.Max(0, Omega * (particle.SourceTerm / particle.DiagonalElement));
+                    //particle.Pressure = Math.Max(0, Omega * (particle.SourceTerm / particle.DiagonalElement));
+                    particle.Pressure = 0;
                 }
             });
 
