@@ -434,6 +434,163 @@ namespace SPH_Bachelorprojekt.Utilities.ParticleUtils
             return particleList;
         }
 
+        public List<Particle> BreakingDamOneLayerBoundaryBothSides(int width, int height)
+        {
+            List<Particle> particleList = new List<Particle>();
+            float magitudeOfDeviation = 0f;
+
+            int fluidStart = width / 4;
+            int fluidStartRight = width - width / 4;
+            // Spawn boundarys
+            for (int i = 6; i < width; i += 1)
+            {
+                for (int j = 6; j < height; j += 1)
+                {
+                    if (i < 7 || i > width - 2 || j < 7)
+                    {
+                        Particle particle = new Particle(new Vector2(i * ParticleSizeH, j * ParticleSizeH), Density, ParticleSizeH, true);
+                        particleList.Add(particle);
+                    }
+                }
+            }
+
+            // spawn removeable boundary
+            for (int j = 7; j < height; j += 1)
+            {
+                Particle particle = new Particle(new Vector2(fluidStart * ParticleSizeH, j * ParticleSizeH), Density, ParticleSizeH, true, true);
+                particleList.Add(particle);
+
+            }
+
+
+            // spawn fluid
+            for (int i = 7; i < fluidStart; i++)
+            {
+                for (int j = 7; j < height / 1.5; j++)
+                {
+                    Particle particle1 = new Particle(new Vector2(i * ParticleSizeH + GetRandomValue(magitudeOfDeviation), j * ParticleSizeH + GetRandomValue(magitudeOfDeviation)), Density, ParticleSizeH, false);
+                    particleList.Add(particle1);
+                }
+            }
+            for (int i = fluidStartRight; i < width - 1; i++)
+            {
+                for (int j = 7; j < height / 1.5; j++)
+                {
+                    Particle particle1 = new Particle(new Vector2(i * ParticleSizeH + GetRandomValue(magitudeOfDeviation), j * ParticleSizeH + GetRandomValue(magitudeOfDeviation)), Density, ParticleSizeH, false);
+                    particleList.Add(particle1);
+                }
+            }
+            return particleList;
+        }
+
+        public List<Particle> DroppingFluidDropletOnSurface(int width, int height)
+        {
+            List<Particle> particleList = new List<Particle>();
+            float magitudeOfDeviation = 0f;
+
+            int dropletStart = (width / 5) * 2;
+            int dropletEnd = (width / 5) * 3;
+            int dropletMiddleX = width / 2;
+            int dropletMiddleY = (height / 3) * 2;
+            // Spawn boundarys
+            for (int i = 6; i < width; i += 1)
+            {
+                for (int j = 6; j < height; j += 1)
+                {
+                    if (i < 7 || i > width - 2 || j < 7)
+                    {
+                        Particle particle = new Particle(new Vector2(i * ParticleSizeH, j * ParticleSizeH), Density, ParticleSizeH, true);
+                        particleList.Add(particle);
+                    }
+                }
+            }
+
+            // spawn fluid
+            for (int i = 7; i < width - 1; i++)
+            {
+                for (int j = 7; j < height / 3; j++)
+                {
+                    Particle particle1 = new Particle(new Vector2(i * ParticleSizeH + GetRandomValue(magitudeOfDeviation), j * ParticleSizeH + GetRandomValue(magitudeOfDeviation)), Density, ParticleSizeH, false);
+                    particleList.Add(particle1);
+                }
+            }
+            // fluid droplet 
+            /*for (int i = dropletStart; i < dropletEnd; i++)
+            {
+                for (int j = (height / 3) * 2; j < height; j++)
+                {
+                    //SQUARE
+                    Particle particle1 = new Particle(new Vector2(i * ParticleSizeH + GetRandomValue(magitudeOfDeviation), j * ParticleSizeH + GetRandomValue(magitudeOfDeviation)), Density, ParticleSizeH, false);
+                    particleList.Add(particle1);
+                }
+            }*/
+            for (int i = -width / 10; i <= width / 10; i++)
+            {
+                for (int j = -width / 10; j <= width / 10; j++)
+                {
+                    //CIRCLE
+                    if (Math.Abs(i) + Math.Abs(j) <= width / 10)
+                    {
+                        Particle particle1 = new Particle(new Vector2(dropletMiddleX + i * ParticleSizeH + GetRandomValue(magitudeOfDeviation), dropletMiddleY + j * ParticleSizeH + GetRandomValue(magitudeOfDeviation)), Density, ParticleSizeH, false);
+                        particleList.Add(particle1);
+                    }
+                }
+            }
+            return particleList;
+        }
+
+        public List<Particle> WaterfallIntoBoxOneLayerBoundary(int width, int height)
+        {
+            List<Particle> particleList = new List<Particle>();
+            float magitudeOfDeviation = 0f;
+
+            int reservoirWidth = width / 2;
+            int reservoirHeight = height / 3;
+            // Spawn boundarys
+            for (int i = 6; i < width + 2; i += 1)
+            {
+                for (int j = 6; j < height + 2 ; j += 1)
+                {
+                    //general boundary
+                    if (i < 7 || i > width || j < 7)
+                    {
+                        Particle particle = new Particle(new Vector2(i * ParticleSizeH, j * ParticleSizeH), Density, ParticleSizeH, true);
+                        particleList.Add(particle);
+                    }
+                    //reservoir boundary
+                    else if (i == reservoirWidth && j > reservoirHeight + 5 && j < reservoirHeight + 12)
+                    {
+                        // gap in reservoir
+                    }
+                    else if ((j == reservoirHeight && i < reservoirWidth) || (i == reservoirWidth && j > reservoirHeight) || (i == reservoirWidth && j == reservoirHeight))
+                    {
+                        Particle particle = new Particle(new Vector2(i * ParticleSizeH, j * ParticleSizeH), Density, ParticleSizeH, true);
+                        particleList.Add(particle);
+                    }
+                    if ((i == reservoirWidth && j == reservoirHeight + 5) || (i == reservoirWidth && j == reservoirHeight + 12))
+                    {
+                        // reservoir "tunnel"
+                        Particle particle = new Particle(new Vector2((i + 1) * ParticleSizeH, j * ParticleSizeH), Density, ParticleSizeH, true);
+                        particleList.Add(particle);
+                        particle = new Particle(new Vector2((i + 2) * ParticleSizeH, j * ParticleSizeH), Density, ParticleSizeH, true);
+                        particleList.Add(particle);
+                    }
+                }
+            }
+
+
+            // spawn fluid
+            for (int i = 7; i < reservoirWidth; i++)
+            {
+                for (int j = reservoirHeight + 1; j < height - 2; j++)
+                {
+                    Particle particle1 = new Particle(new Vector2(i * ParticleSizeH + GetRandomValue(magitudeOfDeviation), j * ParticleSizeH + GetRandomValue(magitudeOfDeviation)), Density, ParticleSizeH, false);
+                    particleList.Add(particle1);
+                }
+            }
+            return particleList;
+        }
+
         public List<Particle> FunnelIntoBox()
         {
             List<Particle> particleList = new List<Particle>();

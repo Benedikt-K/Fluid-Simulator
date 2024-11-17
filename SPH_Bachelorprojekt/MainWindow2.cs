@@ -50,7 +50,7 @@ namespace SPH_Bachelorprojekt
             public int NumerOfTimeStep = 0;
             public string CurrentDate = DateTime.Now.ToString("dd-MM-yyyy-HH-mm");
             public bool SaveSimulationToImages = false;
-            public int SaveEvery_X_TimeStep = 1;
+            public int SaveEvery_X_TimeStep = 10;
             // what to use for simulation
             public bool UseIISPH = true;
             public bool UseNeighbour = true;
@@ -58,8 +58,8 @@ namespace SPH_Bachelorprojekt
             public void Run()
             {
                 // INITIALIZE IMPORTANT VARIABLES
-                float particleSizeH = 3f;                           // works with 8
-                float viscosity = 20f;                              // works with 10
+                float particleSizeH = 1f;                           // works with 8
+                float viscosity = 2f;                              // works with 10
                 float timeStep = 0.1f;                              // works with 0.2
                 float startDensity = 0.5f;                          // works with 0.3
                 float gravity = -0.8f;                              // works with -0.4
@@ -69,7 +69,7 @@ namespace SPH_Bachelorprojekt
                 float stiffness = 300f;                             // works with 300  -> größeres k kleinerer TimeStep
 
                 // ONLY FOR VISUALS, scaling
-                float scaleFactorDrawing = 2f;
+                float scaleFactorDrawing = 2f; // 3
 
                 // for plotting later
                 StartingDensity = startDensity;
@@ -91,7 +91,10 @@ namespace SPH_Bachelorprojekt
                 //List<Particle> particles = spawner.FluidColumOneLayerBoundary(15, 50);
                 //List<Particle> particles = spawner.FluidColumOneLayerBoundary(15, 100);
                 //List<Particle> particles = spawner.BreakingDamBigAndWideTestLimitOneLayerBoundary();
-                List<Particle> particles = spawner.BreakingDamOneLayerBoundary(200, 150);
+                //List<Particle> particles = spawner.BreakingDamOneLayerBoundary(200, 150);
+                //List<Particle> particles = spawner.BreakingDamOneLayerBoundaryBothSides(600, 200); // from size 3 to 1 --> 3x
+                //List<Particle> particles = spawner.WaterfallIntoBoxOneLayerBoundary(300, 300); // 300,300
+                List<Particle> particles = spawner.DroppingFluidDropletOnSurface(600, 250);
                 //List<Particle> particles = spawner.FluidColumWithOutRand();
                 //List<Particle> particles = spawner.DroppingFluidColumn();
                 //List<Particle> particles = spawner.DroppingFluidColumnBig();
@@ -134,9 +137,6 @@ namespace SPH_Bachelorprojekt
                     ////////////////////////
                     //UPDATE TimeStep
                     ////////////////////////
-                    // increase current Timer
-                    CurrentTimeStep += timeStep;
-                    // update TimeStep size
                     if (SimulationLoop.CalculateParticleLambdaCFL(SimulationLoop.MaxVelocity) > 0.5f)
                     {
                         timeStep *= 0.7f;
@@ -145,6 +145,7 @@ namespace SPH_Bachelorprojekt
                     {
                         timeStep *= 1.5f;
                     }
+                    CurrentTimeStep += timeStep;
                     ////////////////////////
                     //UPDATE PARTICLES
                     ////////////////////////
@@ -244,7 +245,8 @@ namespace SPH_Bachelorprojekt
                         bool saveCurrentTimeStep = NumerOfTimeStep % SaveEvery_X_TimeStep == 0;
                         if (NumerOfTimeStep != 1 && saveCurrentTimeStep) 
                         {
-                            screenshot.CopyToImage().SaveToFile(CurrentDate + "/" + "screenshot" + NumerOfTimeStep + ".png");
+                            string fileName = NumerOfTimeStep.ToString("D5");
+                            screenshot.CopyToImage().SaveToFile(CurrentDate + "/" + "screenshot" + fileName + ".png");
                         }
                     }
                     if (StartDensityErrorAndIterationCollection)

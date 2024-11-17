@@ -138,8 +138,8 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             ///
             /// calculate Pressures of all particles
             ///
-            int min_Iterations = 20;
-            int max_Iterations = 100;
+            int min_Iterations = 5;
+            int max_Iterations = 10;
             float max_error_Percentage = 1f; // given in %
             // dislocate to other file
             int currentIteration = 0;
@@ -154,14 +154,13 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                 DoPressureSolveIteration(kernel, ref averageDensityError);
                 percentageDensityError = (averageDensityError - Density) / Density;
                 float eta = max_error_Percentage * 0.01f * Density;
-                float test = 0.01f;
                 float absoluteAverageDensityError = Math.Abs(averageDensityError);
-                continueWhile = absoluteAverageDensityError >= test;
-                Console.WriteLine("iter: " + currentIteration + "---Err: " + absoluteAverageDensityError);
+                continueWhile = absoluteAverageDensityError >= eta;
+                Console.WriteLine("iter: " + currentIteration + "---Err: " + (((absoluteAverageDensityError + Density) - Density) / Density * 100));
                 // add data for graph
                 if (collectAverageDensityErrIter && currentIteration > 0)
                 {
-                    densityErrorData.Add(absoluteAverageDensityError * 100); // get DensityError in %
+                    densityErrorData.Add((absoluteAverageDensityError - Density) / Density * 100); // get DensityError in %
                     iterationData.Add(currentIteration);
                 }
                 currentIteration++;
@@ -226,7 +225,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                     float innerTerm = particle.Pressure + omega * ((particle.SourceTerm - Ap) / particle.DiagonalElement);
                     particle.Pressure = Math.Max(innerTerm, 0);
                 }
-                averageDensityError += (Ap - particle.SourceTerm);
+                averageDensityError += Math.Abs(Ap - particle.SourceTerm);
             }
             averageDensityError /= FluidParticleCount;
 
