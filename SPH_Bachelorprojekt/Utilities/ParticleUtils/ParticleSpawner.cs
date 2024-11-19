@@ -483,6 +483,60 @@ namespace SPH_Bachelorprojekt.Utilities.ParticleUtils
             return particleList;
         }
 
+        public List<Particle> BreakingDamOneLayerBoundaryBothSidesAndMiddle(int width, int height)
+        {
+            List<Particle> particleList = new List<Particle>();
+            float magitudeOfDeviation = 0f;
+
+            int fluidStart = width / 4;
+            int fluidStartRight = width - width / 4;
+            int fluidStartMiddle = width / 2;
+            int fluidEndMiddle = width / 2 + width / 6;
+            // Spawn boundarys
+            for (int i = 6; i < width; i += 1)
+            {
+                for (int j = 6; j < height; j += 1)
+                {
+                    if (i < 7 || i > width - 2 || j < 7)
+                    {
+                        Particle particle = new Particle(new Vector2(i * ParticleSizeH, j * ParticleSizeH), Density, ParticleSizeH, true);
+                        particleList.Add(particle);
+                    }
+                }
+            }
+
+
+            // spawn fluid
+            //left
+            for (int i = 7; i < fluidStart; i++)
+            {
+                for (int j = 7; j < height / 2; j++)
+                {
+                    Particle particle1 = new Particle(new Vector2(i * ParticleSizeH + GetRandomValue(magitudeOfDeviation), j * ParticleSizeH + GetRandomValue(magitudeOfDeviation)), Density, ParticleSizeH, false);
+                    particleList.Add(particle1);
+                }
+            }
+            //right
+            for (int i = fluidStartRight; i < width - 1; i++)
+            {
+                for (int j = 7; j < height / 2; j++)
+                {
+                    Particle particle1 = new Particle(new Vector2(i * ParticleSizeH + GetRandomValue(magitudeOfDeviation), j * ParticleSizeH + GetRandomValue(magitudeOfDeviation)), Density, ParticleSizeH, false);
+                    particleList.Add(particle1);
+                }
+            }
+            //middle
+            for (int i = fluidStartMiddle; i < fluidEndMiddle; i++)
+            {
+                for (int j = 7; j < height / 4; j++)
+                {
+                    Particle particle1 = new Particle(new Vector2(i * ParticleSizeH + GetRandomValue(magitudeOfDeviation), j * ParticleSizeH + GetRandomValue(magitudeOfDeviation)), Density, ParticleSizeH, false);
+                    particleList.Add(particle1);
+                }
+            }
+            return particleList;
+        }
+
         public List<Particle> DroppingFluidDropletOnSurface(int width, int height)
         {
             List<Particle> particleList = new List<Particle>();
@@ -497,7 +551,7 @@ namespace SPH_Bachelorprojekt.Utilities.ParticleUtils
             {
                 for (int j = 6; j < height; j += 1)
                 {
-                    if (i < 7 || i > width - 2 || j < 7)
+                    if (i < 7 || i > width - 2 || j < 7 || j > height - 2)
                     {
                         Particle particle = new Particle(new Vector2(i * ParticleSizeH, j * ParticleSizeH), Density, ParticleSizeH, true);
                         particleList.Add(particle);
@@ -528,7 +582,7 @@ namespace SPH_Bachelorprojekt.Utilities.ParticleUtils
             {
                 for (int j = -width / 10; j <= width / 10; j++)
                 {
-                    //CIRCLE
+                    // ROTATED SQUARE
                     if (Math.Abs(i) + Math.Abs(j) <= width / 10)
                     {
                         Particle particle1 = new Particle(new Vector2(dropletMiddleX + i * ParticleSizeH + GetRandomValue(magitudeOfDeviation), dropletMiddleY + j * ParticleSizeH + GetRandomValue(magitudeOfDeviation)), Density, ParticleSizeH, false);
@@ -722,9 +776,9 @@ namespace SPH_Bachelorprojekt.Utilities.ParticleUtils
             // Spawn boundarys
             for (int i = 6; i < width; i += 1)
             {
-                for (int j = 6; j < height; j += 1)
+                for (int j = 6; j < 100; j += 1)
                 {
-                    if (i < 7 || i > width - 2 || j < 7 || j > height - 2)
+                    if (i < 7 || i > width - 2 || j < 7 || j > 100 - 2)
                     {
                         Particle particle = new Particle(new Vector2(i * ParticleSizeH, j * ParticleSizeH), Density, ParticleSizeH, true);
                         particleList.Add(particle);

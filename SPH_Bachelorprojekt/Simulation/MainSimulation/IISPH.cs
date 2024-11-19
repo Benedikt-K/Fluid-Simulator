@@ -11,6 +11,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
 {
     /// <summary>
     /// functions to compute the pressure using a global pressure computation
+    /// // Implementation based on "https://cg.informatik.uni-freiburg.de/publications/2013_TVCG_IISPH.pdf" and notes from Prof. Teschner
     /// </summary>
 
     class IISPH

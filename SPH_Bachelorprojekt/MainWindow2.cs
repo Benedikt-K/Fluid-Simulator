@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Numerics;
 using SFML.Graphics;
 using SFML.Window;
+using System.Timers;
 using SPH_Bachelorprojekt.Simulation.Particles;
 using SPH_Bachelorprojekt.Utilities.ParticleUtils;
 using SPH_Bachelorprojekt.Simulation.Kernel_Function;
@@ -46,11 +47,18 @@ namespace SPH_Bachelorprojekt
             private readonly bool VelocityColors = true;
             private readonly bool PressureColors = false;
             private readonly bool DensityColors = false;
+            // runtime measurement
+            public float TimertimestepsCount;
+            public float TimerTimeStepCurrentValue;
+            public bool TimerIsRunning = false;
+            public float TimerStoppingTimeStep = 1f;
+            public System.Diagnostics.Stopwatch Stopwatch;
+            public float AverageDensityErrorForTimer;
             // save Stimestep screen to folder ?
             public int NumerOfTimeStep = 0;
             public string CurrentDate = DateTime.Now.ToString("dd-MM-yyyy-HH-mm");
             public bool SaveSimulationToImages = false;
-            public int SaveEvery_X_TimeStep = 10;
+            public int SaveEvery_X_TimeStep = 2;
             // what to use for simulation
             public bool UseIISPH = true;
             public bool UseNeighbour = true;
@@ -58,18 +66,18 @@ namespace SPH_Bachelorprojekt
             public void Run()
             {
                 // INITIALIZE IMPORTANT VARIABLES
-                float particleSizeH = 1f;                           // works with 8
-                float viscosity = 2f;                              // works with 10
-                float timeStep = 0.1f;                              // works with 0.2
-                float startDensity = 0.5f;                          // works with 0.3
-                float gravity = -0.8f;                              // works with -0.4
+                float particleSizeH = 1f;                           // works with 8 // IISPH 1
+                float viscosity = 2f;                              // works with 2
+                float timeStep = 0.001f;                              
+                float startDensity = 0.5f;                          // works with 0.5
+                float gravity = -0.8f;                              // works with -0.8
                 float smoothingLength = particleSizeH;
 
                 // ONLY FOR SESPH
-                float stiffness = 300f;                             // works with 300  -> größeres k kleinerer TimeStep
+                float stiffness = 10000f;                             // works with 300  -> größeres k kleinerer TimeStep
 
                 // ONLY FOR VISUALS, scaling
-                float scaleFactorDrawing = 2f; // 3
+                float scaleFactorDrawing = 6f; 
 
                 // for plotting later
                 StartingDensity = startDensity;
@@ -89,12 +97,13 @@ namespace SPH_Bachelorprojekt
                 // Sim
                 //List<Particle> particles = spawner.FluidColum();
                 //List<Particle> particles = spawner.FluidColumOneLayerBoundary(15, 50);
-                //List<Particle> particles = spawner.FluidColumOneLayerBoundary(15, 100);
+                List<Particle> particles = spawner.FluidColumOneLayerBoundary(15, 100);
                 //List<Particle> particles = spawner.BreakingDamBigAndWideTestLimitOneLayerBoundary();
-                //List<Particle> particles = spawner.BreakingDamOneLayerBoundary(200, 150);
+                //List<Particle> particles = spawner.BreakingDamOneLayerBoundary(50, 50);
                 //List<Particle> particles = spawner.BreakingDamOneLayerBoundaryBothSides(600, 200); // from size 3 to 1 --> 3x
                 //List<Particle> particles = spawner.WaterfallIntoBoxOneLayerBoundary(300, 300); // 300,300
-                List<Particle> particles = spawner.DroppingFluidDropletOnSurface(600, 250);
+                //List<Particle> particles = spawner.DroppingFluidDropletOnSurface(600, 250);
+                //List<Particle> particles = spawner.BreakingDamOneLayerBoundaryBothSidesAndMiddle(800, 300);
                 //List<Particle> particles = spawner.FluidColumWithOutRand();
                 //List<Particle> particles = spawner.DroppingFluidColumn();
                 //List<Particle> particles = spawner.DroppingFluidColumnBig();
@@ -137,7 +146,7 @@ namespace SPH_Bachelorprojekt
                     ////////////////////////
                     //UPDATE TimeStep
                     ////////////////////////
-                    if (SimulationLoop.CalculateParticleLambdaCFL(SimulationLoop.MaxVelocity) > 0.5f)
+                    /*if (SimulationLoop.CalculateParticleLambdaCFL(SimulationLoop.MaxVelocity) > 0.5f)
                     {
                         timeStep *= 0.7f;
                     }
@@ -145,7 +154,7 @@ namespace SPH_Bachelorprojekt
                     {
                         timeStep *= 1.5f;
                     }
-                    CurrentTimeStep += timeStep;
+                    CurrentTimeStep += timeStep;*/
                     ////////////////////////
                     //UPDATE PARTICLES
                     ////////////////////////
@@ -218,6 +227,7 @@ namespace SPH_Bachelorprojekt
                     /////////////////////
                     // DATA COLLECTION
                     /////////////////////
+                    // density error
                     if (StartDensityErrorCollection) 
                     {
                         dataX.Add(CurrentTimeStep);
@@ -231,6 +241,28 @@ namespace SPH_Bachelorprojekt
                             plot.SavePng("AverageDensityOverTime.png", 800, 600);
                             StartDensityErrorCollection = false;
                             Console.WriteLine("stopped and saved");
+                        }
+                    }
+                    // display density error
+                    // Console.WriteLine((simulationLoop.AverageDensity - StartingDensity) / StartingDensity * 100);
+                    // runtime 
+                    if (TimerIsRunning)
+                    {
+                        if (TimerTimeStepCurrentValue >= TimerStoppingTimeStep)
+                        {
+                            Stopwatch.Stop();
+                            AverageDensityErrorForTimer /= TimertimestepsCount;
+                            Console.Write("------------------------------------------------\n");
+                            Console.WriteLine("Average Density Error: " + AverageDensityErrorForTimer);
+                            Console.WriteLine("Time elapsed for 1 simulated second: " + Stopwatch.ElapsedMilliseconds + "ms");
+                            Console.Write("------------------------------------------------\n");
+                            TimerIsRunning = false;
+                        }
+                        else
+                        {
+                            TimerTimeStepCurrentValue += TimeStep;
+                            TimertimestepsCount++;
+                            AverageDensityErrorForTimer += Math.Abs((simulationLoop.AverageDensity - StartingDensity) / StartingDensity * 100);
                         }
                     }
                     /////////////////////
@@ -318,6 +350,15 @@ namespace SPH_Bachelorprojekt
                         }
                     }
                     SimulationLoop.Particles = newP;
+                    // start timer 
+                    if (!TimerIsRunning)
+                    {
+                        Stopwatch = System.Diagnostics.Stopwatch.StartNew();
+                        TimerTimeStepCurrentValue = 0;
+                        TimertimestepsCount = 0;
+                        AverageDensityErrorForTimer = 0;
+                        TimerIsRunning = true;
+                    }
                 }
                 if (e.Code == SFML.Window.Keyboard.Key.C)
                 {
