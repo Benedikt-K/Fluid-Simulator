@@ -55,7 +55,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             Gravity = gravity;
             Omega = 0.5f;
             Gamma = 0.7f;
-            Lambda = 0.5f;
+            Lambda = 0.7f;
             LambdaSESPH = 0.1f;
             MaxTimestep = 0.01f;
             MinTimeStep = 0.00005f;
@@ -146,8 +146,8 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             /// calculate Pressures of all particles
             ///
             int min_Iterations = 3;
-            int max_Iterations = 50;
-            float max_error_Percentage = 1f; // given in %
+            int max_Iterations = 10;
+            float max_error_Percentage = 0.25f; // given in %
             // dislocate to other file
             int currentIteration = 0;
             float averageDensityError = float.PositiveInfinity;
@@ -589,7 +589,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
         public void UpdateParticle(Particle particle, List<Particle> neighbours, Kernel kernel)
         {
             // update timestep
-            float maxVelocity = Particles.Max(p => p.Velocity.Length());
+            /*float maxVelocity = Particles.Max(p => p.Velocity.Length());
             float maxAcceleration = Particles.Max(p => (p.Acceleration.Length()));
 
             float velocityConstrain = ParticleSizeH / maxVelocity;
@@ -599,7 +599,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             newTimeStep = Math.Min(MinTimeStep, newTimeStep);
             newTimeStep = Math.Max(MaxTimestep, newTimeStep);
 
-            TimeStep = newTimeStep;
+            TimeStep = newTimeStep;*/
             //SpatialHashing.RemoveObject(particle);
             particle.Velocity += TimeStep * particle.Acceleration;
             particle.Position += TimeStep * particle.Velocity;

@@ -68,16 +68,16 @@ namespace SPH_Bachelorprojekt
                 // INITIALIZE IMPORTANT VARIABLES
                 float particleSizeH = 1f;                           // works with 8 // IISPH 1
                 float viscosity = 2f;                              // works with 2
-                float timeStep = 0.001f;                              
+                float timeStep = 0.01f;                              
                 float startDensity = 0.5f;                          // works with 0.5
                 float gravity = -0.8f;                              // works with -0.8
                 float smoothingLength = particleSizeH;
 
                 // ONLY FOR SESPH
-                float stiffness = 10000f;                             // works with 300  -> größeres k kleinerer TimeStep
+                float stiffness = 12000f;                             // works with 300  -> größeres k kleinerer TimeStep
 
                 // ONLY FOR VISUALS, scaling
-                float scaleFactorDrawing = 6f; 
+                float scaleFactorDrawing = 4f; 
 
                 // for plotting later
                 StartingDensity = startDensity;
@@ -96,8 +96,8 @@ namespace SPH_Bachelorprojekt
 
                 // Sim
                 //List<Particle> particles = spawner.FluidColum();
-                //List<Particle> particles = spawner.FluidColumOneLayerBoundary(15, 50);
-                List<Particle> particles = spawner.FluidColumOneLayerBoundary(15, 100);
+                List<Particle> particles = spawner.FluidColumOneLayerBoundary(15, 200);
+                //List<Particle> particles = spawner.FluidColumOneLayerBoundary(15, 200);
                 //List<Particle> particles = spawner.BreakingDamBigAndWideTestLimitOneLayerBoundary();
                 //List<Particle> particles = spawner.BreakingDamOneLayerBoundary(50, 50);
                 //List<Particle> particles = spawner.BreakingDamOneLayerBoundaryBothSides(600, 200); // from size 3 to 1 --> 3x
@@ -260,7 +260,7 @@ namespace SPH_Bachelorprojekt
                         }
                         else
                         {
-                            TimerTimeStepCurrentValue += TimeStep;
+                            TimerTimeStepCurrentValue += simulationLoop.TimeStep;
                             TimertimestepsCount++;
                             AverageDensityErrorForTimer += Math.Abs((simulationLoop.AverageDensity - StartingDensity) / StartingDensity * 100);
                         }

@@ -776,9 +776,9 @@ namespace SPH_Bachelorprojekt.Utilities.ParticleUtils
             // Spawn boundarys
             for (int i = 6; i < width; i += 1)
             {
-                for (int j = 6; j < 100; j += 1)
+                for (int j = 6; j < height; j += 1)
                 {
-                    if (i < 7 || i > width - 2 || j < 7 || j > 100 - 2)
+                    if (i < 7 || i > width - 2 || j < 7 || j > height - 2)
                     {
                         Particle particle = new Particle(new Vector2(i * ParticleSizeH, j * ParticleSizeH), Density, ParticleSizeH, true);
                         particleList.Add(particle);
