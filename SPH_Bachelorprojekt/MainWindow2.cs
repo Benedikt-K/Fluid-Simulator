@@ -57,8 +57,10 @@ namespace SPH_Bachelorprojekt
             // save Stimestep screen to folder ?
             public int NumerOfTimeStep = 0;
             public string CurrentDate = DateTime.Now.ToString("dd-MM-yyyy-HH-mm");
-            public bool SaveSimulationToImages = false;
-            public int SaveEvery_X_TimeStep = 2;
+            public bool SaveSimulationToImages = true;
+            public int SaveEvery_X_TimeStep = 5;
+            public float SaveThisNextTimeStep = 0f;
+            public float SaveEveryX = 1 / 10;
             // what to use for simulation
             public bool UseIISPH = true;
             public bool UseNeighbour = true;
@@ -77,7 +79,7 @@ namespace SPH_Bachelorprojekt
                 float stiffness = 12000f;                             // works with 300  -> größeres k kleinerer TimeStep
 
                 // ONLY FOR VISUALS, scaling
-                float scaleFactorDrawing = 4f; 
+                float scaleFactorDrawing = 2f; 
 
                 // for plotting later
                 StartingDensity = startDensity;
@@ -86,8 +88,8 @@ namespace SPH_Bachelorprojekt
                 Stiffness = stiffness;
                 
                 // initialize window
-                uint videoY = 1000;
-                uint videoX = 1800;
+                uint videoY = 1200;
+                uint videoX = 2000;
                 var mode = new VideoMode(videoX, videoY);
                 var window = new RenderWindow(mode, "Bachelorthesis - SPH Simulation - Benedikt Kuss");
                 var view = window.GetView();
@@ -96,12 +98,12 @@ namespace SPH_Bachelorprojekt
 
                 // Sim
                 //List<Particle> particles = spawner.FluidColum();
-                List<Particle> particles = spawner.FluidColumOneLayerBoundary(15, 200);
+                //List<Particle> particles = spawner.FluidColumOneLayerBoundary(15, 200);
                 //List<Particle> particles = spawner.FluidColumOneLayerBoundary(15, 200);
                 //List<Particle> particles = spawner.BreakingDamBigAndWideTestLimitOneLayerBoundary();
                 //List<Particle> particles = spawner.BreakingDamOneLayerBoundary(50, 50);
                 //List<Particle> particles = spawner.BreakingDamOneLayerBoundaryBothSides(600, 200); // from size 3 to 1 --> 3x
-                //List<Particle> particles = spawner.WaterfallIntoBoxOneLayerBoundary(300, 300); // 300,300
+                List<Particle> particles = spawner.WaterfallIntoBoxOneLayerBoundary(500, 500); // 300,300
                 //List<Particle> particles = spawner.DroppingFluidDropletOnSurface(600, 250);
                 //List<Particle> particles = spawner.BreakingDamOneLayerBoundaryBothSidesAndMiddle(800, 300);
                 //List<Particle> particles = spawner.FluidColumWithOutRand();
@@ -165,65 +167,68 @@ namespace SPH_Bachelorprojekt
                     ///////////////////////
                     //DRAW PARTICLES
                     ///////////////////////
-                    window.Clear();
-                    MaxPressure = SimulationLoop.MaxCurrentParticlePressure;
-                    foreach (var particle in SimulationLoop.Particles)
+                    if (NumerOfTimeStep % SaveEvery_X_TimeStep == SaveEvery_X_TimeStep - 1 || SaveEvery_X_TimeStep == 0)
                     {
-                        SFML.System.Vector2f transformedPosition = new SFML.System.Vector2f((particle.Position.X - particleSizeH / 2) * scaleFactorDrawing, videoY - (particle.Position.Y - particleSizeH / 2) * scaleFactorDrawing);
-                        circle.Position = new SFML.System.Vector2f(transformedPosition.X, transformedPosition.Y);
-                        if (particle.IsBoundaryParticle)
+                        window.Clear();
+                        MaxPressure = SimulationLoop.MaxCurrentParticlePressure;
+                        foreach (var particle in SimulationLoop.Particles)
                         {
-                            if (!particle.IsRemoveable)
+                            SFML.System.Vector2f transformedPosition = new SFML.System.Vector2f((particle.Position.X - particleSizeH / 2) * scaleFactorDrawing, videoY - (particle.Position.Y - particleSizeH / 2) * scaleFactorDrawing);
+                            circle.Position = new SFML.System.Vector2f(transformedPosition.X, transformedPosition.Y);
+                            if (particle.IsBoundaryParticle)
                             {
-                                circle.FillColor = SFML.Graphics.Color.White;
+                                if (!particle.IsRemoveable)
+                                {
+                                    circle.FillColor = SFML.Graphics.Color.White;
+                                }
+                                else
+                                {
+                                    circle.FillColor = SFML.Graphics.Color.Green;
+                                }
                             }
                             else
                             {
-                                circle.FillColor = SFML.Graphics.Color.Green;
-                            }                            
-                        }
-                        else
-                        {
-                            if (VelocityColors)
-                            {
-                                // Color for velocity
-                                float lambdaParticle = SimulationLoop.CalculateParticleLambdaCFL(particle.Velocity * 2);
-                                circle.FillColor = GetColor(lambdaParticle);
-                            }
-                            else if (PressureColors) 
-                            {
-                                // Color for pressure
-                                if (CurrentTimeStep < timeStep * 2)
+                                if (VelocityColors)
                                 {
+                                    // Color for velocity
+                                    float lambdaParticle = SimulationLoop.CalculateParticleLambdaCFL(particle.Velocity * 2);
+                                    circle.FillColor = GetColor(lambdaParticle);
+                                }
+                                else if (PressureColors)
+                                {
+                                    // Color for pressure
+                                    if (CurrentTimeStep < timeStep * 2)
+                                    {
+                                        circle.FillColor = SFML.Graphics.Color.Blue;
+                                    }
+                                    float maxPressure = 0f;
+                                    foreach (Particle particle1 in simulationLoop.Particles)
+                                    {
+                                        if (particle1.Pressure < maxPressure)
+                                        {
+                                            maxPressure = particle1.Pressure;
+                                        }
+                                    }
+                                    float pressureFactor = particle.Pressure / maxPressure + 0.01f;
+                                    circle.FillColor = GetColor(pressureFactor);
+                                }
+                                else if (DensityColors)
+                                {
+                                    // Color for density
+                                    float densityFactor = (particle.Density - 0.99f * startDensity) / (1.01f * startDensity - 0.99f * startDensity);
+                                    circle.FillColor = GetColor(densityFactor);
+                                }
+                                else
+                                {
+                                    // standart color is blue
                                     circle.FillColor = SFML.Graphics.Color.Blue;
                                 }
-                                float maxPressure = 0f;
-                                foreach(Particle particle1 in simulationLoop.Particles)
-                                {
-                                    if (particle1.Pressure < maxPressure)
-                                    {
-                                        maxPressure = particle1.Pressure;
-                                    }
-                                }
-                                float pressureFactor = particle.Pressure / maxPressure + 0.01f;
-                                circle.FillColor = GetColor(pressureFactor);
                             }
-                            else if (DensityColors)
-                            {
-                                // Color for density
-                                float densityFactor = (particle.Density - 0.99f * startDensity) / (1.01f * startDensity - 0.99f * startDensity);
-                                circle.FillColor = GetColor(densityFactor);
-                            }
-                            else
-                            {
-                                // standart color is blue
-                                circle.FillColor = SFML.Graphics.Color.Blue;
-                            }
+                            window.Draw(circle);
                         }
-                        window.Draw(circle);
+                        // display the rendered frame on screen
+                        window.Display();
                     }
-                    // display the rendered frame on screen
-                    window.Display();
                     /////////////////////
                     // DATA COLLECTION
                     /////////////////////
@@ -271,15 +276,17 @@ namespace SPH_Bachelorprojekt
                     if (SaveSimulationToImages && !IsPaused)
                     {
                         NumerOfTimeStep++;
-                        SFML.Graphics.Texture screenshot = new SFML.Graphics.Texture(videoX, videoX);
+                        SFML.Graphics.Texture screenshot = new SFML.Graphics.Texture(videoX, videoY);
                         screenshot.Update(window);
                         System.IO.Directory.CreateDirectory(CurrentDate);
                         bool saveCurrentTimeStep = NumerOfTimeStep % SaveEvery_X_TimeStep == 0;
+                        //bool SaveThisTimeStep = simulationLoop.ElapsedTime - SaveThisNextTimeStep > SaveEveryX;
                         if (NumerOfTimeStep != 1 && saveCurrentTimeStep) 
                         {
                             string fileName = NumerOfTimeStep.ToString("D5");
                             screenshot.CopyToImage().SaveToFile(CurrentDate + "/" + "screenshot" + fileName + ".png");
                         }
+                        //SaveThisNextTimeStep += SaveEveryX;
                     }
                     if (StartDensityErrorAndIterationCollection)
                     {

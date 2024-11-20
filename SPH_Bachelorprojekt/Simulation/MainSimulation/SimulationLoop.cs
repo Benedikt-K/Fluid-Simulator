@@ -146,8 +146,8 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             /// calculate Pressures of all particles
             ///
             int min_Iterations = 3;
-            int max_Iterations = 10;
-            float max_error_Percentage = 0.25f; // given in %
+            int max_Iterations = 15;
+            float max_error_Percentage = 1f; // given in %
             // dislocate to other file
             int currentIteration = 0;
             float averageDensityError = float.PositiveInfinity;

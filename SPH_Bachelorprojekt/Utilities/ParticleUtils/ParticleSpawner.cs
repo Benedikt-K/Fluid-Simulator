@@ -612,7 +612,7 @@ namespace SPH_Bachelorprojekt.Utilities.ParticleUtils
                         particleList.Add(particle);
                     }
                     //reservoir boundary
-                    else if (i == reservoirWidth && j > reservoirHeight + 5 && j < reservoirHeight + 12)
+                    else if (i == reservoirWidth && j > reservoirHeight + 40 && j < reservoirHeight + 50)
                     {
                         // gap in reservoir
                     }
@@ -621,12 +621,18 @@ namespace SPH_Bachelorprojekt.Utilities.ParticleUtils
                         Particle particle = new Particle(new Vector2(i * ParticleSizeH, j * ParticleSizeH), Density, ParticleSizeH, true);
                         particleList.Add(particle);
                     }
-                    if ((i == reservoirWidth && j == reservoirHeight + 5) || (i == reservoirWidth && j == reservoirHeight + 12))
+                    if ((i == reservoirWidth && j == reservoirHeight + 40) || (i == reservoirWidth && j == reservoirHeight + 50))
                     {
                         // reservoir "tunnel"
                         Particle particle = new Particle(new Vector2((i + 1) * ParticleSizeH, j * ParticleSizeH), Density, ParticleSizeH, true);
                         particleList.Add(particle);
                         particle = new Particle(new Vector2((i + 2) * ParticleSizeH, j * ParticleSizeH), Density, ParticleSizeH, true);
+                        particleList.Add(particle);
+                        particle = new Particle(new Vector2((i + 3) * ParticleSizeH, j * ParticleSizeH), Density, ParticleSizeH, true);
+                        particleList.Add(particle);
+                        particle = new Particle(new Vector2((i + 4) * ParticleSizeH, j * ParticleSizeH), Density, ParticleSizeH, true);
+                        particleList.Add(particle);
+                        particle = new Particle(new Vector2((i + 5) * ParticleSizeH, j * ParticleSizeH), Density, ParticleSizeH, true);
                         particleList.Add(particle);
                     }
                 }
