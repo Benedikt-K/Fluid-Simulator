@@ -614,7 +614,9 @@ namespace SPH_Bachelorprojekt.Utilities.ParticleUtils
                     //reservoir boundary
                     else if (i == reservoirWidth && j > reservoirHeight + 40 && j < reservoirHeight + 50)
                     {
-                        // gap in reservoir
+                        // gap in reservoir -> removable boundarys
+                        Particle particle = new Particle(new Vector2(i * ParticleSizeH, j * ParticleSizeH), Density, ParticleSizeH, true, true);
+                        particleList.Add(particle);
                     }
                     else if ((j == reservoirHeight && i < reservoirWidth) || (i == reservoirWidth && j > reservoirHeight) || (i == reservoirWidth && j == reservoirHeight))
                     {

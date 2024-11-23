@@ -57,12 +57,12 @@ namespace SPH_Bachelorprojekt
             // save Stimestep screen to folder ?
             public int NumerOfTimeStep = 0;
             public string CurrentDate = DateTime.Now.ToString("dd-MM-yyyy-HH-mm");
-            public bool SaveSimulationToImages = true;
-            public int SaveEvery_X_TimeStep = 5;
+            public bool SaveSimulationToImages = false;
+            public int SaveEvery_X_TimeStep = 8;
             public float SaveThisNextTimeStep = 0f;
             public float SaveEveryX = 1 / 10;
             // what to use for simulation
-            public bool UseIISPH = true;
+            public bool UseIISPH = false;
             public bool UseNeighbour = true;
 
             public void Run()
@@ -76,10 +76,10 @@ namespace SPH_Bachelorprojekt
                 float smoothingLength = particleSizeH;
 
                 // ONLY FOR SESPH
-                float stiffness = 12000f;                             // works with 300  -> größeres k kleinerer TimeStep
+                float stiffness = 10000f;                             // works with 300  -> größeres k kleinerer TimeStep
 
                 // ONLY FOR VISUALS, scaling
-                float scaleFactorDrawing = 2f; 
+                float scaleFactorDrawing = 10f; 
 
                 // for plotting later
                 StartingDensity = startDensity;
@@ -101,9 +101,9 @@ namespace SPH_Bachelorprojekt
                 //List<Particle> particles = spawner.FluidColumOneLayerBoundary(15, 200);
                 //List<Particle> particles = spawner.FluidColumOneLayerBoundary(15, 200);
                 //List<Particle> particles = spawner.BreakingDamBigAndWideTestLimitOneLayerBoundary();
-                //List<Particle> particles = spawner.BreakingDamOneLayerBoundary(50, 50);
+                List<Particle> particles = spawner.BreakingDamOneLayerBoundary(50, 50);
                 //List<Particle> particles = spawner.BreakingDamOneLayerBoundaryBothSides(600, 200); // from size 3 to 1 --> 3x
-                List<Particle> particles = spawner.WaterfallIntoBoxOneLayerBoundary(500, 500); // 300,300
+                //List<Particle> particles = spawner.WaterfallIntoBoxOneLayerBoundary(300, 300); // 300,300
                 //List<Particle> particles = spawner.DroppingFluidDropletOnSurface(600, 250);
                 //List<Particle> particles = spawner.BreakingDamOneLayerBoundaryBothSidesAndMiddle(800, 300);
                 //List<Particle> particles = spawner.FluidColumWithOutRand();
@@ -167,7 +167,7 @@ namespace SPH_Bachelorprojekt
                     ///////////////////////
                     //DRAW PARTICLES
                     ///////////////////////
-                    if (NumerOfTimeStep % SaveEvery_X_TimeStep == SaveEvery_X_TimeStep - 1 || SaveEvery_X_TimeStep == 0)
+                    if (NumerOfTimeStep % SaveEvery_X_TimeStep == SaveEvery_X_TimeStep - 1 || SaveEvery_X_TimeStep == 0 || !SaveSimulationToImages)
                     {
                         window.Clear();
                         MaxPressure = SimulationLoop.MaxCurrentParticlePressure;

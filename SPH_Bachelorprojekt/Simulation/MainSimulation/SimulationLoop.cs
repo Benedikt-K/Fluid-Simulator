@@ -57,9 +57,9 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             Gamma = 0.7f;
             Lambda = 0.7f;
             LambdaSESPH = 0.1f;
-            MaxTimestep = 0.01f;
+            MaxTimestep = 0.005f;
             MinTimeStep = 0.00005f;
-            MaxTimestepSESPH = 0.001f;
+            MaxTimestepSESPH = 0.01f;
             MinTimeStepSESPH = 0.0005f;
             //minDensity = 0f;
             int fluidCount = 0;
@@ -146,8 +146,8 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             /// calculate Pressures of all particles
             ///
             int min_Iterations = 3;
-            int max_Iterations = 15;
-            float max_error_Percentage = 1f; // given in %
+            int max_Iterations = 30;
+            float max_error_Percentage = 0.5f; // given in %
             // dislocate to other file
             int currentIteration = 0;
             float averageDensityError = float.PositiveInfinity;
@@ -312,8 +312,6 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
 
                 });
             }
-            
-            //Console.WriteLine("Number Particles: " + Particles.Count);
 
 
             // Compute Density and Pressure
@@ -424,6 +422,17 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             // Update velocitys and positions
             foreach(Particle particle in Particles)
             {
+                // update timestep
+                float maxVelocity = Particles.Max(p => p.Velocity.Length());
+                float maxAcceleration = Particles.Max(p => (p.Acceleration.Length()));
+
+                float velocityConstrain = ParticleSizeH / maxVelocity;
+                float accelerationConstraint = ParticleSizeH / maxAcceleration;
+
+                float newTimeStep = LambdaSESPH * Math.Min(maxVelocity, maxAcceleration);
+                newTimeStep = Math.Min(MinTimeStepSESPH, newTimeStep);
+                newTimeStep = Math.Max(MaxTimestepSESPH, newTimeStep);
+
                 //deleting and later add hash particles (update basically)
                 //SpatialHashing.RemoveObject(particle);
                 if (particle.IsBoundaryParticle)
