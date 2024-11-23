@@ -12,15 +12,70 @@ namespace SPH_Bachelorprojekt.Simulation.Kernel_Function
         private float h; // particle Size
         private float h2; 
         private float alpha; // Normalization factor 2D
+        private float beta;
+        private float factor;
 
         private const float kernelCorrection = 0.04f / 0.0400344729f;
 
-        public Kernel(float ParticleSize)
+        public Kernel(float smoothingLength)
         {
-            h = ParticleSize; // works with Kernel support of h
+            h = smoothingLength; // works with Kernel support of h
             h2 = h * h;
-            alpha = 5 / (14 * Convert.ToSingle(Math.PI) * h2); // For 2D          
+            alpha = 5 / (14 * Convert.ToSingle(Math.PI) * h2); // For 2D
+            beta = 10 / (7 * (float)Math.PI * h2);
+            double rad9 = Math.Pow((double)smoothingLength, 9.0);
+            factor = (float)(315.0 / (64 * Math.PI * rad9));
         }
+
+        /*public float W(float distance)
+        {
+            float distance2 = distance * distance;
+            if (distance2 > h)
+            {
+                return 0f;
+            }
+            if (distance2 < float.Epsilon)
+            {
+                distance2 = float.Epsilon;
+            }
+            float diffSq = h2 - distance2;
+            return factor * diffSq * diffSq * diffSq;
+        }
+
+        public Vector2 GradW(Vector2 position_I, Vector2 position_J)
+        {
+            Vector2 difference = position_I - position_J;
+            float distance2 = Vector2.DistanceSquared(position_I, position_J);
+            if (distance2 > h2)
+            {
+                return Vector2.Zero;
+            }
+            if (distance2 < float.Epsilon)
+            {
+                distance2 = float.Epsilon;
+            }
+            float diffSq = h2 - distance2;
+            float f = -factor * 6.0f * diffSq * diffSq;
+            return new Vector2(difference.X * f, difference.Y * f);
+        }*/
+
+        /*public float W(float distance)
+        {
+            float q = distance / h;
+            float q2 = q * q;
+            if (0 <= q && q <= 1)
+            {
+                return beta * (1 - (3 / 2) * q2 * (1 - (q / 2)));
+            }
+            else if (1 < q && q <= 2)
+            {
+                return (beta / 4) * (2 - q) * (2 - q) * (2 - q);
+            }
+            else
+            {
+                return 0;
+            }
+        }*/
 
         public float W(float distance)
         {
@@ -47,7 +102,7 @@ namespace SPH_Bachelorprojekt.Simulation.Kernel_Function
             float t1 = Math.Max(1 - d, 0);
             float t2 = Math.Max(2 - d, 0);
             float t3 = (-3 * t2 * t2) + (12 * t1 * t1);
-            return alpha * (positionDifference / (distance * h)) * t3 ; // Maybe h2 instead of h
+            return alpha * (positionDifference / (distance * h)) * t3 ; 
         }
 
         public void TestKernel()

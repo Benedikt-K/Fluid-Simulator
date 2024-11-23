@@ -11,12 +11,12 @@ namespace SPH_Bachelorprojekt.Simulation.Particles
     public class Particle
     {
         public Vector2 Position;
-        public Vector2 PositionNew;
         public Vector2 Velocity;
         public Vector2 PredictedVelocity;
         public float DiagonalElement;
         public float A_i_i;
-        public Vector2 Dij_Pj;
+        public Vector2 DII;
+        public Vector2 DIJ_PJ;
         public Vector2 Acceleration;
         public Vector2 PressureAcceleration;
         public Vector2 NonPressureAcceleration;
@@ -32,7 +32,6 @@ namespace SPH_Bachelorprojekt.Simulation.Particles
         public Particle(Vector2 position, float density, float particleSizeH, bool boundaryParticle=false, bool isRemoveable=false)
         {
             Position = position;
-            PositionNew = position;
             Velocity = Vector2.Zero;
             PredictedVelocity = Vector2.Zero;
             Acceleration = Vector2.Zero;
@@ -40,7 +39,8 @@ namespace SPH_Bachelorprojekt.Simulation.Particles
             NonPressureAcceleration = Vector2.Zero;
             DiagonalElement = 0;
             A_i_i = 0.0f;
-            Dij_Pj = Vector2.Zero;
+            DII = Vector2.Zero;
+            DIJ_PJ = Vector2.Zero;
             Density = density;
             ParticleSizeH = particleSizeH;
             IsBoundaryParticle = boundaryParticle;
@@ -58,6 +58,7 @@ namespace SPH_Bachelorprojekt.Simulation.Particles
             Velocity = velocity;
             PredictedVelocity = Vector2.Zero;
             Density = density;
+            Pressure = 0f;
             ParticleSizeH = particleSizeH;
             IsBoundaryParticle = boundaryParticle;
             // initialize mass
@@ -86,7 +87,7 @@ namespace SPH_Bachelorprojekt.Simulation.Particles
         public float GetMass()
         {
             float mass = Density * ParticleSizeH * ParticleSizeH;
-            return mass;
+            return Mass;
         }
 
     }
