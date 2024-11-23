@@ -59,7 +59,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             LambdaSESPH = 0.1f;
             MaxTimestep = 0.005f;
             MinTimeStep = 0.00005f;
-            MaxTimestepSESPH = 0.01f;
+            MaxTimestepSESPH = 0.005f;
             MinTimeStepSESPH = 0.0005f;
             //minDensity = 0f;
             int fluidCount = 0;

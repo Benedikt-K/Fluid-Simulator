@@ -414,12 +414,12 @@ namespace SPH_Bachelorprojekt.Utilities.ParticleUtils
             }
 
             // spawn removeable boundary
-            for (int j = 7; j < height; j += 1)
+            /*for (int j = 7; j < height; j += 1)
             {
                 Particle particle = new Particle(new Vector2(fluidStart * ParticleSizeH, j * ParticleSizeH), Density, ParticleSizeH, true, true);
                 particleList.Add(particle);
 
-            }
+            }*/
 
 
             // spawn fluid

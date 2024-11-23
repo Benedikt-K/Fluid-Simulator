@@ -51,7 +51,7 @@ namespace SPH_Bachelorprojekt
             public float TimertimestepsCount;
             public float TimerTimeStepCurrentValue;
             public bool TimerIsRunning = false;
-            public float TimerStoppingTimeStep = 1f;
+            public float TimerStoppingTimeStep = 100f;
             public System.Diagnostics.Stopwatch Stopwatch;
             public float AverageDensityErrorForTimer;
             // save Stimestep screen to folder ?
@@ -62,7 +62,7 @@ namespace SPH_Bachelorprojekt
             public float SaveThisNextTimeStep = 0f;
             public float SaveEveryX = 1 / 10;
             // what to use for simulation
-            public bool UseIISPH = true;
+            public bool UseIISPH = false;
             public bool UseNeighbour = true;
 
             public void Run()
@@ -76,7 +76,7 @@ namespace SPH_Bachelorprojekt
                 float smoothingLength = particleSizeH;
 
                 // ONLY FOR SESPH
-                float stiffness = 10000f;                             // works with 300  -> größeres k kleinerer TimeStep
+                float stiffness = 6000f;                             // works with 300  -> größeres k kleinerer TimeStep
 
                 // ONLY FOR VISUALS, scaling
                 float scaleFactorDrawing = 10f; 
@@ -163,6 +163,7 @@ namespace SPH_Bachelorprojekt
                     if (!IsPaused) 
                     {
                         SimulationLoop.UpdateAllParticles(smoothingLength, UseIISPH, UseNeighbour, ref DensityIterationErrorDataX, ref DensityIterationErrorDataY, StartDensityErrorAndIterationCollection);
+                        CurrentTimeStep += timeStep;
                     }
                     ///////////////////////
                     //DRAW PARTICLES
@@ -236,8 +237,9 @@ namespace SPH_Bachelorprojekt
                     if (StartDensityErrorCollection) 
                     {
                         dataX.Add(CurrentTimeStep);
-                        dataY.Add((simulationLoop.AverageDensity - StartingDensity) / StartingDensity * 100);
-                        if (CurrentTimeStep >= 70)
+                        dataY.Add(Math.Abs((simulationLoop.AverageDensity - StartingDensity) / StartingDensity * 100));
+                        //dataY.Add(((simulationLoop.AverageDensity - StartingDensity) / StartingDensity * 100));
+                        /*if (CurrentTimeStep >= 70)
                         {
                             plot.Add.Scatter(dataX, dataY);
                             // annotation
@@ -246,7 +248,7 @@ namespace SPH_Bachelorprojekt
                             plot.SavePng("AverageDensityOverTime.png", 800, 600);
                             StartDensityErrorCollection = false;
                             Console.WriteLine("stopped and saved");
-                        }
+                        }*/
                     }
                     // display density error
                     // Console.WriteLine((simulationLoop.AverageDensity - StartingDensity) / StartingDensity * 100);
@@ -297,7 +299,7 @@ namespace SPH_Bachelorprojekt
                         var densityIterErrPlot = plot.Add.Scatter(DensityIterationErrorDataY, DensityIterationErrorDataX);
                         plot.XLabel("Iteration");
                         plot.YLabel("Average density error in %");
-                        plot.SavePng("DensityErrorPerIteration" + ErrorCollectionPlotCount + ".png", 1000, 800);
+                        plot.SavePng("DensityErrorPerIteration" + ErrorCollectionPlotCount + ".png", 800, 600);
                         StartDensityErrorAndIterationCollection = false;
                         plot.Remove(densityIterErrPlot);
                     }
@@ -330,7 +332,7 @@ namespace SPH_Bachelorprojekt
                         plot.Add.Scatter(dataX, dataY);
                         //plot.Add.HorizontalLine(StartingDensity);
                         // annotation
-                        plot.Add.Annotation("Viscosity: " + Viscosity + Environment.NewLine + "Stiffness: " + Stiffness + Environment.NewLine + "TimeStep: " + TimeStep);
+                        //plot.Add.Annotation("Viscosity: " + Viscosity + Environment.NewLine + "Stiffness: " + Stiffness + Environment.NewLine + "TimeStep: " + TimeStep);
                         // save to png
                         plot.SavePng("AverageDensityOverTime.png", 800, 600);
                         Console.WriteLine("Saving succsessful");
@@ -364,11 +366,33 @@ namespace SPH_Bachelorprojekt
                     // start timer 
                     if (!TimerIsRunning)
                     {
+                        StartDensityErrorCollection = true;
+                        Console.WriteLine("Starting data collection");
                         Stopwatch = System.Diagnostics.Stopwatch.StartNew();
                         TimerTimeStepCurrentValue = 0;
                         TimertimestepsCount = 0;
                         AverageDensityErrorForTimer = 0;
                         TimerIsRunning = true;
+                    }
+                    else
+                    {
+                        float elapsedTime = Stopwatch.ElapsedMilliseconds;
+                        Stopwatch.Stop();
+                        float timePerSecond = elapsedTime / TimerTimeStepCurrentValue;
+                        Console.WriteLine("needed computation time" + timePerSecond);
+                        plot.Add.Scatter(dataX, dataY);
+                        plot.XLabel("Simulated time", size: 16);
+                        plot.YLabel("Density error in %", size: 16);
+                        // tick density
+                        ScottPlot.TickGenerators.NumericAutomatic tickGenX = new ScottPlot.TickGenerators.NumericAutomatic();
+                        tickGenX.TickDensity = 0.4;
+                        plot.Axes.Bottom.TickGenerator = tickGenX;
+
+                        ScottPlot.TickGenerators.NumericAutomatic tickGenY = new ScottPlot.TickGenerators.NumericAutomatic();
+                        tickGenY.TickDensity = 0.4;
+                        plot.Axes.Left.TickGenerator = tickGenY;
+
+                        plot.SavePng("AverageDensityOverTime.png", 1000, 500);
                     }
                 }
                 if (e.Code == SFML.Window.Keyboard.Key.C)
