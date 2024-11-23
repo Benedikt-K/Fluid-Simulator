@@ -62,7 +62,7 @@ namespace SPH_Bachelorprojekt
             public float SaveThisNextTimeStep = 0f;
             public float SaveEveryX = 1 / 10;
             // what to use for simulation
-            public bool UseIISPH = false;
+            public bool UseIISPH = true;
             public bool UseNeighbour = true;
 
             public void Run()
