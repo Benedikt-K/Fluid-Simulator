@@ -427,7 +427,7 @@ namespace SPH_Bachelorprojekt.Utilities.ParticleUtils
             {
                 for (int j = 7; j < height / 1.5; j++)
                 {
-                    Particle particle1 = new Particle(new Vector2(i * ParticleSizeH + GetRandomValue(magitudeOfDeviation), j * ParticleSizeH + GetRandomValue(magitudeOfDeviation)), Density, ParticleSizeH, false);
+                    Particle particle1 = new Particle(new Vector2(i * ParticleSizeH, j * ParticleSizeH), Density, ParticleSizeH, false);
                     particleList.Add(particle1);
                 }
             }

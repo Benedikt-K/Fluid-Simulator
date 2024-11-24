@@ -62,7 +62,7 @@ namespace SPH_Bachelorprojekt
             public float SaveThisNextTimeStep = 0f;
             public float SaveEveryX = 1 / 10;
             // what to use for simulation
-            public bool UseIISPH = false;
+            public bool UseIISPH = true;
             public bool UseNeighbour = true;
 
             public void Run()
@@ -71,12 +71,12 @@ namespace SPH_Bachelorprojekt
                 float particleSizeH = 1f;                           // works with 8 // IISPH 1
                 float viscosity = 2f;                              // works with 2
                 float timeStep = 0.01f;                              
-                float startDensity = 0.5f;                          // works with 0.5
+                float startDensity = 5f;                          // works with 0.5
                 float gravity = -0.8f;                              // works with -0.8
                 float smoothingLength = particleSizeH;
 
                 // ONLY FOR SESPH
-                float stiffness = 6000f;                             // works with 300  -> größeres k kleinerer TimeStep
+                float stiffness = 10000f;                             // works with 300  -> größeres k kleinerer TimeStep
 
                 // ONLY FOR VISUALS, scaling
                 float scaleFactorDrawing = 10f; 

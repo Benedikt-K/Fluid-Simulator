@@ -55,12 +55,12 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             Gravity = gravity;
             Omega = 0.5f;
             Gamma = 0.7f;
-            Lambda = 0.7f;
+            Lambda = 0.5f;
             LambdaSESPH = 0.1f;
             MaxTimestep = 0.005f;
             MinTimeStep = 0.00005f;
-            MaxTimestepSESPH = 0.005f;
-            MinTimeStepSESPH = 0.0005f;
+            MaxTimestepSESPH = 0.001f;
+            MinTimeStepSESPH = 0.00005f;
             //minDensity = 0f;
             int fluidCount = 0;
             foreach (Particle particle in Particles)
@@ -245,19 +245,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
 
         public void UpdateIISPH(Kernel kernel)
         {
-            // update timestep
-            float maxVelocity = Particles.Max(p => p.Velocity.Length());
-            float maxAcceleration = Particles.Max(p => (p.NonPressureAcceleration.Length() + p.PressureAcceleration.Length()));
-
-            float velocityConstrain = ParticleSizeH / maxVelocity;
-            float accelerationConstraint = ParticleSizeH / maxAcceleration;
-
-            float newTimeStep = Lambda * Math.Min(maxVelocity, maxAcceleration);
-            newTimeStep = Math.Min(MinTimeStep, newTimeStep);
-            newTimeStep = Math.Max(MaxTimestep, newTimeStep);
-
-            TimeStep = newTimeStep;
-            ///
+                        ///
             /// update particle positions and velocitys
             /// 
             foreach (Particle particle in Particles)
@@ -269,6 +257,18 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                     particle.Position += TimeStep * particle.Velocity;
                 }
             }
+            // update timestep
+            float maxVelocity = Particles.Max(p => p.Velocity.Length());
+            float maxAcceleration = Particles.Max(p => (p.NonPressureAcceleration.Length() + p.PressureAcceleration.Length()));
+
+            float velocityConstrain = ParticleSizeH / maxVelocity;
+            float accelerationConstraint = ParticleSizeH / maxAcceleration;
+
+            float newTimeStep = Lambda * Math.Min(velocityConstrain, accelerationConstraint);
+            newTimeStep = Math.Min(MaxTimestep, newTimeStep);
+            newTimeStep = Math.Max(MinTimeStep, newTimeStep);
+
+            TimeStep = newTimeStep;
         }
 
             public void UpdateAllParticlesSPH(float smoothingLength, bool useNeighbour)
@@ -421,20 +421,20 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                 }
             });
 
+
+            // update timestep
+            float maxVelocity = Particles.Max(p => p.Velocity.Length());
+            float maxAcceleration = Particles.Max(p => (p.Acceleration.Length()));
+
+            float velocityConstrain = ParticleSizeH / maxVelocity;
+            float accelerationConstraint = ParticleSizeH / maxAcceleration;
+
+            float newTimeStep = LambdaSESPH * Math.Min(velocityConstrain, accelerationConstraint);
+            newTimeStep = Math.Min(MaxTimestepSESPH, newTimeStep);
+            newTimeStep = Math.Max(MinTimeStepSESPH, newTimeStep);
             // Update velocitys and positions
-            foreach(Particle particle in Particles)
+            foreach (Particle particle in Particles)
             {
-                // update timestep
-                float maxVelocity = Particles.Max(p => p.Velocity.Length());
-                float maxAcceleration = Particles.Max(p => (p.Acceleration.Length()));
-
-                float velocityConstrain = ParticleSizeH / maxVelocity;
-                float accelerationConstraint = ParticleSizeH / maxAcceleration;
-
-                float newTimeStep = LambdaSESPH * Math.Min(maxVelocity, maxAcceleration);
-                newTimeStep = Math.Min(MinTimeStepSESPH, newTimeStep);
-                newTimeStep = Math.Max(MaxTimestepSESPH, newTimeStep);
-
                 //deleting and later add hash particles (update basically)
                 //SpatialHashing.RemoveObject(particle);
                 if (particle.IsBoundaryParticle)
