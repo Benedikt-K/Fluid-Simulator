@@ -57,8 +57,8 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             Gamma = 0.7f;
             Lambda = 0.5f;
             LambdaSESPH = 0.1f;
-            MaxTimestep = 0.005f;
-            MinTimeStep = 0.00005f;
+            MaxTimestep = 0.01f;
+            MinTimeStep = 0.0005f;
             MaxTimestepSESPH = 0.001f;
             MinTimeStepSESPH = 0.00005f;
             //minDensity = 0f;

@@ -148,15 +148,7 @@ namespace SPH_Bachelorprojekt
                     ////////////////////////
                     //UPDATE TimeStep
                     ////////////////////////
-                    /*if (SimulationLoop.CalculateParticleLambdaCFL(SimulationLoop.MaxVelocity) > 0.5f)
-                    {
-                        timeStep *= 0.7f;
-                    }
-                    else if (SimulationLoop.CalculateParticleLambdaCFL(SimulationLoop.MaxVelocity) > 0.2f)
-                    {
-                        timeStep *= 1.5f;
-                    }
-                    CurrentTimeStep += timeStep;*/
+                    ///---> is now done in IISPH and SESPH update formulations respectively
                     ////////////////////////
                     //UPDATE PARTICLES
                     ////////////////////////
