@@ -172,10 +172,11 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                     densityErrorData.Add(((absoluteAverageDensityError + Density) - Density) / Density * 100); // get DensityError in %
                     iterationData.Add(currentIteration);
                 }
+                Console.WriteLine("current iter: " + currentIteration + "---Err: " + ((Math.Abs(averageDensityError) / Density * 100)));
                 currentIteration++;
             }
             //Console.WriteLine("iterations needed: " + currentIteration);
-            Console.WriteLine("iter: " + currentIteration + "---Err: " + (((Math.Abs(averageDensityError) + Density) - Density) / Density * 100));
+            Console.WriteLine("needed iter: " + currentIteration + "---Err: " + ((Math.Abs(averageDensityError) / Density * 100)));
         }
 
         public void DoPressureSolveIteration(Kernel kernel, ref float averageDensityError)
