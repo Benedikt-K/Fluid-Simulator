@@ -55,9 +55,9 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             Gravity = gravity;
             Omega = 0.5f;
             Gamma = 0.7f;
-            Lambda = 0.5f;
+            Lambda = 0.7f;
             LambdaSESPH = 0.1f;
-            MaxTimestep = 0.01f;
+            MaxTimestep = 0.005f;
             MinTimeStep = 0.0005f;
             MaxTimestepSESPH = 0.001f;
             MinTimeStepSESPH = 0.00005f;
@@ -151,7 +151,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             /// calculate Pressures of all particles
             ///
             int min_Iterations = 3;
-            int max_Iterations = 30;
+            int max_Iterations = 10;
             float max_error_Percentage = 0.5f; // given in %
             // dislocate to other file
             int currentIteration = 0;
@@ -259,7 +259,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
                 }
             }
             // update timestep
-            float maxVelocity = Particles.Max(p => p.Velocity.Length());
+            /*float maxVelocity = Particles.Max(p => p.Velocity.Length());
             float maxAcceleration = Particles.Max(p => (p.NonPressureAcceleration.Length() + p.PressureAcceleration.Length()));
 
             float velocityConstrain = ParticleSizeH / maxVelocity;
@@ -269,7 +269,7 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             newTimeStep = Math.Min(MaxTimestep, newTimeStep);
             newTimeStep = Math.Max(MinTimeStep, newTimeStep);
 
-            TimeStep = newTimeStep;
+            TimeStep = newTimeStep;*/
         }
 
             public void UpdateAllParticlesSPH(float smoothingLength, bool useNeighbour)
@@ -430,7 +430,8 @@ namespace SPH_Bachelorprojekt.Simulation.MainSimulation
             float velocityConstrain = ParticleSizeH / maxVelocity;
             float accelerationConstraint = ParticleSizeH / maxAcceleration;
 
-            float newTimeStep = LambdaSESPH * Math.Min(velocityConstrain, accelerationConstraint);
+            //float newTimeStep = LambdaSESPH * Math.Min(velocityConstrain, accelerationConstraint);
+            float newTimeStep = LambdaSESPH * velocityConstrain;
             newTimeStep = Math.Min(MaxTimestepSESPH, newTimeStep);
             newTimeStep = Math.Max(MinTimeStepSESPH, newTimeStep);
             // Update velocitys and positions

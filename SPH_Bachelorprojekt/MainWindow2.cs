@@ -58,11 +58,11 @@ namespace SPH_Bachelorprojekt
             public int NumerOfTimeStep = 0;
             public string CurrentDate = DateTime.Now.ToString("dd-MM-yyyy-HH-mm");
             public bool SaveSimulationToImages = false;
-            public int SaveEvery_X_TimeStep = 8;
+            public int SaveEvery_X_TimeStep = 2;
             public float SaveThisNextTimeStep = 0f;
             public float SaveEveryX = 1 / 10;
             // what to use for simulation
-            public bool UseIISPH = true;
+            public bool UseIISPH = false;
             public bool UseNeighbour = true;
 
             public void Run()
@@ -71,8 +71,8 @@ namespace SPH_Bachelorprojekt
                 float particleSizeH = 1f;                           // works with 8 // IISPH 1
                 float viscosity = 2f;                              // works with 2
                 float timeStep = 0.01f;                              
-                float startDensity = 5f;                          // works with 0.5
-                float gravity = -0.8f;                              // works with -0.8
+                float startDensity = 10f;                          // works with 0.5
+                float gravity = -1.8f;                              // works with -0.8
                 float smoothingLength = particleSizeH;
 
                 // ONLY FOR SESPH
@@ -98,14 +98,14 @@ namespace SPH_Bachelorprojekt
 
                 // Sim
                 //List<Particle> particles = spawner.FluidColum();
-                //List<Particle> particles = spawner.FluidColumOneLayerBoundary(15, 200);
+                List<Particle> particles = spawner.FluidColumOneLayerBoundary(15, 50);
                 //List<Particle> particles = spawner.FluidColumOneLayerBoundary(15, 200);
                 //List<Particle> particles = spawner.BreakingDamBigAndWideTestLimitOneLayerBoundary();
-                List<Particle> particles = spawner.BreakingDamOneLayerBoundary(50, 50);
+                //List<Particle> particles = spawner.BreakingDamOneLayerBoundary(500, 500);
                 //List<Particle> particles = spawner.BreakingDamOneLayerBoundaryBothSides(600, 200); // from size 3 to 1 --> 3x
-                //List<Particle> particles = spawner.WaterfallIntoBoxOneLayerBoundary(300, 300); // 300,300
+                //List<Particle> particles = spawner.WaterfallIntoBoxOneLayerBoundary(500, 500); // 300,300
                 //List<Particle> particles = spawner.DroppingFluidDropletOnSurface(600, 250);
-                //List<Particle> particles = spawner.BreakingDamOneLayerBoundaryBothSidesAndMiddle(800, 300);
+                //List<Particle> particles = spawner.BreakingDamOneLayerBoundaryBothSidesAndMiddle(700, 300);
                 //List<Particle> particles = spawner.FluidColumWithOutRand();
                 //List<Particle> particles = spawner.DroppingFluidColumn();
                 //List<Particle> particles = spawner.DroppingFluidColumnBig();
@@ -274,7 +274,7 @@ namespace SPH_Bachelorprojekt
                         screenshot.Update(window);
                         System.IO.Directory.CreateDirectory(CurrentDate);
                         bool saveCurrentTimeStep = NumerOfTimeStep % SaveEvery_X_TimeStep == 0;
-                        //bool SaveThisTimeStep = simulationLoop.ElapsedTime - SaveThisNextTimeStep > SaveEveryX;
+                        //bool saveCurrentTimeStep = simulationLoop.ElapsedTime - SaveThisNextTimeStep > SaveEveryX;
                         if (NumerOfTimeStep != 1 && saveCurrentTimeStep) 
                         {
                             string fileName = NumerOfTimeStep.ToString("D5");

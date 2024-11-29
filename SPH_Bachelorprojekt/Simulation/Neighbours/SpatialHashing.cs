@@ -63,16 +63,16 @@ namespace SPH_Bachelorprojekt.Simulation.Neighbours
         public void GetNeighbours(Vector2 position, float searchRadius, ref List<Particle> foundNeighbours)
         {
             foundNeighbours.Clear();
-            int startPos_X = (int) Math.Floor((position.X - searchRadius) / CellSize);
-            int endPos_X = (int) Math.Ceiling((position.X + searchRadius) / CellSize);
-            int startPos_Y = (int) Math.Floor((position.Y - searchRadius) / CellSize);
-            int endPos_Y = (int) Math.Ceiling((position.Y + searchRadius) / CellSize);
-            IEnumerable<int> x_positions = Enumerable.Range(startPos_X, endPos_X - startPos_X + 1);
-            IEnumerable<int> y_positions = Enumerable.Range(startPos_Y, endPos_Y - startPos_Y + 1);
+            int X_StartPosition = (int) Math.Floor((position.X - searchRadius) / CellSize);
+            int X_EndPosition = (int) Math.Ceiling((position.X + searchRadius) / CellSize);
+            int Y_StartPosition = (int) Math.Floor((position.Y - searchRadius) / CellSize);
+            int Y_EndPosition = (int) Math.Ceiling((position.Y + searchRadius) / CellSize);
+            IEnumerable<int> X_PossibleCells = Enumerable.Range(X_StartPosition, X_EndPosition - X_StartPosition + 1);
+            IEnumerable<int> Y_PossibleCells = Enumerable.Range(Y_StartPosition, Y_EndPosition - Y_StartPosition + 1);
 
-            foreach (int x in x_positions)
+            foreach (int x in X_PossibleCells)
             {
-                foreach (int y in y_positions)
+                foreach (int y in Y_PossibleCells)
                 {
                     Vector2 hashValue = new Vector2(x, y);
                     if (DictionarySpatial.ContainsKey(hashValue))

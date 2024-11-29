@@ -396,7 +396,6 @@ namespace SPH_Bachelorprojekt.Utilities.ParticleUtils
         public List<Particle> BreakingDamOneLayerBoundary(int width, int height)
         {
             List<Particle> particleList = new List<Particle>();
-            float magitudeOfDeviation = 0f;
 
             int fluidStart = width / 3;
 
@@ -405,7 +404,7 @@ namespace SPH_Bachelorprojekt.Utilities.ParticleUtils
             {
                 for (int j = 6; j < height; j += 1)
                 {
-                    if (i < 7 || i > width - 2 || j < 7)
+                    if (i < 7 || i > width - 2 || j < 7 || j > height - 2)
                     {
                         Particle particle = new Particle(new Vector2(i * ParticleSizeH, j * ParticleSizeH), Density, ParticleSizeH, true);
                         particleList.Add(particle);
@@ -612,7 +611,7 @@ namespace SPH_Bachelorprojekt.Utilities.ParticleUtils
                         particleList.Add(particle);
                     }
                     //reservoir boundary
-                    else if (i == reservoirWidth && j > reservoirHeight + 40 && j < reservoirHeight + 50)
+                    else if (i == reservoirWidth && j > reservoirHeight + 40 && j < reservoirHeight + 55)
                     {
                         // gap in reservoir -> removable boundarys
                         Particle particle = new Particle(new Vector2(i * ParticleSizeH, j * ParticleSizeH), Density, ParticleSizeH, true, true);
@@ -623,7 +622,7 @@ namespace SPH_Bachelorprojekt.Utilities.ParticleUtils
                         Particle particle = new Particle(new Vector2(i * ParticleSizeH, j * ParticleSizeH), Density, ParticleSizeH, true);
                         particleList.Add(particle);
                     }
-                    if ((i == reservoirWidth && j == reservoirHeight + 40) || (i == reservoirWidth && j == reservoirHeight + 50))
+                    if ((i == reservoirWidth && j == reservoirHeight + 40) || (i == reservoirWidth && j == reservoirHeight + 55))
                     {
                         // reservoir "tunnel"
                         Particle particle = new Particle(new Vector2((i + 1) * ParticleSizeH, j * ParticleSizeH), Density, ParticleSizeH, true);
